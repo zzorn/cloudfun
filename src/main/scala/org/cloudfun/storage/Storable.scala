@@ -16,7 +16,7 @@ import org.cloudfun.CloudFun
 // TODO: Save to and load from JSon style key-value map?
 trait Storable extends MutableData {
 
-  def ref[T <: Storable]: Ref[T] = storage.getReference[T](this)
+  def ref[T <: Storable]: Ref[T] = storage.getReference[T](this.asInstanceOf[T])
   def store() = storage.store(this)
   def delete() = storage.delete(this)
 
@@ -33,19 +33,5 @@ trait Storable extends MutableData {
 
   
 
-  private var _isPartialObject: Boolean = false
-  def isPartialObject: Boolean = _isPartialObject
-  def markAsPartialObject: Unit = _isPartialObject = true
-
-  def containsField(s: String) = contains(s)
-  def containsKey(s: String) = contains(s)
-
-  def removeField(key: String) = remove(key)
-
-  def putAll(m: Map[_, _]) = m.entrySet foreach (e => e. )
-
-  def putAll(o: BSONObject) = {}
-
-  def put(key: String, v: Any) = null
 }
 

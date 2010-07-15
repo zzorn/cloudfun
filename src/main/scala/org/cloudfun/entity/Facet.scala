@@ -4,6 +4,8 @@ import _root_.org.cloudfun.messaging.MessageReceiver
 import org.cloudfun.scheduler.Taskable
 import org.cloudfun.data.Data
 import org.cloudfun.storage.{Ref, Storable}
+import org.cloudfun.scheduler.Taskable
+import org.cloudfun.data.Data
 
 
 /**
