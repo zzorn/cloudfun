@@ -5,7 +5,7 @@
     <projname>cloudfun</projname>
     <projver>0.1-SNAPSHOT</projver>
     <projdesc>Middleware library that provides game centered storage and task execution for local, remote, or multi-node servers.</projdesc>
-    <scala.version>2.8.0.RC7</scala.version>
+    <scala.version>2.8.0</scala.version>
     <scalatest.version>1.2-for-scala-2.8.0.RC6-SNAPSHOT</scalatest.version>
   </properties>
 
@@ -60,6 +60,13 @@
       <artifactId>scalatest</artifactId>
       <version>${scalatest.version}</version>
       <scope>test</scope>
+    </dependency>
+
+    <!-- MongoDB driver -->
+    <dependency>
+      <groupId>com.osinka</groupId>
+      <artifactId>mongo-scala-driver_2.8.0.RC7</artifactId>
+      <version>0.8.1</version>
     </dependency>
 
   </dependencies>
