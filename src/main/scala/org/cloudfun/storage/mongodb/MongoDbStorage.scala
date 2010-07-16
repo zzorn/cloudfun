@@ -9,19 +9,15 @@ import _root_.org.cloudfun.storage.{Ref, Storable, Storage}
 /**
  * 
  */
-class MongoDbStorage(address: ServerAddress, secondaryAddress: ServerAddress = null, databaseName: String = "cloudfun") extends Storage {
+class MongoDbStorage() extends Storage {
 
-  private val mongo: Mongo = if (secondaryAddress == null) {
-    // Single db
-    new Mongo(address)
-  }
-  else {
-    // Run in master and slave mode
-    new Mongo(address, secondaryAddress)
-  }
+  val masterStorage = conf[String]("s",  "storage",            ServerAddress.defaultHost, "Primary MongoDB server address.")
+  val masterPort    = conf[Int]   ("sp", "storage-port",       ServerAddress.defaultPort, "Primary MongoDB server port.")
+  val slaveStorage  = conf[String]("sl", "slave-storage",      "",                        "Secondary MongoDB server address.")
+  val slavePort     = conf[Int]   ("slp","slave-storage-port", ServerAddress.defaultPort, "Secondary MongoDB server port.")
+  val databaseName  = conf[String]("db", "database-name",      "cloudfun",                "Name of database to use.")
 
-  private val database: DB = mongo.getDB(databaseName)
-  private val entityCollection = new MongoCollection[Storable] {
+  class StorableCollection(database: DB) extends MongoCollection[Storable] {
     val underlying = database.getCollection("entities")
 
     def serializer = new Serializer[Storable] {
@@ -41,13 +37,28 @@ class MongoDbStorage(address: ServerAddress, secondaryAddress: ServerAddress = n
     }
   }
 
-/*
-  entityCollection.createIndex({
-    val obj = new DBObject()
-    obj.put("id", 0)
-    obj
-  })
-*/
+  private var mongo: Mongo = null
+  private var database: DB = null
+  private var entityCollection: StorableCollection = null
+
+  override protected def onInit() {
+    val masterAddress = new ServerAddress(masterStorage(), masterPort())
+    val slaveAddress= new ServerAddress(slaveStorage(), slavePort())
+
+    mongo = if (slaveStorage() == null || slaveStorage() == "") new Mongo(masterAddress) // Single database
+            else new Mongo(masterAddress, slaveAddress) // Run in master and slave mode
+
+    database = mongo.getDB(databaseName())
+    entityCollection = new StorableCollection(database)
+
+  /*
+    entityCollection.createIndex({
+      val obj = new DBObject()
+      obj.put("id", 0)
+      obj
+    })
+  */
+  }
 
 
   def store(obj: Storable) {

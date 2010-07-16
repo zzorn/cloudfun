@@ -8,7 +8,7 @@ class MutableMapData extends MutableData {
   def this(map :Map[Symbol, Object]) {
     this()
     map foreach (e => set(e._1, e._2))
-  }  
+  }
 
   private var values: HashMap[Symbol, Object] = new HashMap[Symbol, Object]()
 

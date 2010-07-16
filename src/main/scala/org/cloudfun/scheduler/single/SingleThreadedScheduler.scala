@@ -9,7 +9,9 @@ import java.util.PriorityQueue
  * Simple single-threaded scheduler that can be advanced by calling an update function.
  * Useful for integrating in a render-update loop on a client.
  */
-class SingleThreadedScheduler(clock: Clock) extends Scheduler {
+class SingleThreadedScheduler(clock: Clock, updateManually: Boolean = false) extends Scheduler {
+
+  val updatesPerSecond = conf[Int]("ups", "updates-per-second", 60, "Number of times per second to check and invoke scheduled tasks.  This value only has effect if updateManually is set to false in the code (it is false by default).")
 
   private case class ScheduledTask(time: Time, task: Task) extends Comparable[ScheduledTask] {
     def compareTo(o: ScheduledTask) = if (time.ms < o.time.ms) -1 else if (time.ms > o.time.ms) 1 else 0
@@ -29,31 +31,35 @@ class SingleThreadedScheduler(clock: Clock) extends Scheduler {
     }
   }
 
-  def isRunning: Boolean = active
+  def isActive: Boolean = active
 
-  def start(updatesPerSecond: Int = 60) {
-    if (isRunning) stop()
+  override def onStart() {
+    if (!updateManually) {
+      if (isActive) onStop()
 
-    updater = new Thread(new Runnable {
-      def run = {
-        while(active) {
-          update()
-          Thread.sleep(1000 / updatesPerSecond)
+      updater = new Thread(new Runnable {
+        def run = {
+          while(active) {
+            update()
+            Thread.sleep(1000 / updatesPerSecond())
+          }
         }
-      }
-    })
+      })
 
-    updater.setDaemon(true)
+      updater.setDaemon(true)
 
-    active = true
-    updater.start()
+      active = true
+      updater.start()
+    }
   }
 
-  def stop() {
-    if (isRunning) {
-      active = false
-      updater.join
-      updater = null
+  override def onStop() {
+    if (!updateManually) {
+      if (isActive) {
+        active = false
+        updater.join
+        updater = null
+      }
     }
   }
 

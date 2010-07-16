@@ -1,6 +1,8 @@
 package org.cloudfun
 
+import authentication.Authenticator
 import entity.{FacetServiceImpl, FacetService}
+import network.Network
 import storage.memory.InMemoryStorage
 import time.Clock
 import time.real.RealClock
@@ -11,20 +13,16 @@ import storage.Storage
 /**
  *
  */
-trait CloudFun {
+trait CloudFun extends CloudFunService {
+
   def storage: Storage
+  def clock: Clock
   def scheduler: Scheduler
-  def clock : Clock
+  def authenticator: Authenticator
+  def network: Network
 
-  /**
-   * Starts the system.
-   */
-  def start()
+  final override def subServices: List[CloudFunService] = List(storage, clock, scheduler, authenticator, network)
 
-  /**
-   * Stops the system.
-   */
-  def stop()
 }
 
 

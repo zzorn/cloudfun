@@ -1,5 +1,7 @@
 package org.cloudfun.authentication
 
+import _root_.org.cloudfun.CloudFunService
+
 sealed trait AccountCreationResponse
 case class AccountCreated(account: Account) extends AccountCreationResponse
 
@@ -12,7 +14,7 @@ case object AccountCreationDenied extends AccountCreationError('AccountCreationD
 /**
  * 
  */
-trait Authenticator {
+trait Authenticator extends CloudFunService {
 
   def authenticate(accountName: String, pw: Array[Char]): Option[Account]
   def createAccount(accountName: String, pw: Array[Char]): AccountCreationResponse

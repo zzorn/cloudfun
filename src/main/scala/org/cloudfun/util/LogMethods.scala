@@ -2,6 +2,7 @@ package org.cloudfun.util
 
 import _root_.java.util.logging.{Logger, Level}
 
+
 /**
  * A mixin that provides various logging methods that call a generic logging method.
  *

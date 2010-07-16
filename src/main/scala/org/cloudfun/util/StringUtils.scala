@@ -107,4 +107,9 @@ object StringUtils {
     s.toString
   }
 
+  def removeTrailing(s: String, suffix: String): String = {
+    if (s.endsWith(suffix)) s.substring(0, s.length - suffix.length)
+    else s
+  }
+
 }

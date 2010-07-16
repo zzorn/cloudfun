@@ -1,11 +1,12 @@
 package org.cloudfun.storage
 
+import _root_.org.cloudfun.CloudFunService
 import _root_.org.cloudfun.data.Data
 
 /**
  * A service for storing objects persistently and retrieving them.
  */
-trait Storage {
+trait Storage extends CloudFunService {
 
   private var serializers: List[Serializer] = Nil
 
