@@ -9,6 +9,6 @@ trait Clock {
   
   def currentGameTime: Time
 
-  def delayTo(time: Time): Long = max(0, time.ms - currentGameTime.ms)
+  def millisecondsUntil(time: Time): Long = max(0, time.ms - currentGameTime.ms)
 }
 

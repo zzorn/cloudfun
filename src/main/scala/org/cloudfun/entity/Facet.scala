@@ -13,10 +13,12 @@ import org.cloudfun.data.Data
  */
 trait Facet extends Storable with Taskable with MessageReceiver {
 
+/*
   /**
    * The entity that this facet is a part of.
    */
-  val entity = ref[Entity]('entity).addListener(onEntityChanged)
+  val entity = link[Entity]('entity).addListener(onEntityChanged)
+*/
 
   protected[entity] final def initialize(parameters: Data) {init(parameters)}
 

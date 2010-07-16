@@ -30,7 +30,7 @@ trait Data {
   def properties: Iterable[Symbol]
 
   /** The data as a map. */
-  def toMap: Map[Symbol, Object] = Map(properties map (x => x -> apply(x) ))
+  def toMap: Map[Symbol, Object] = Map() ++ (properties map (x => x -> apply(x) ))
 
   /** Get property, or throw error if not present */
   def apply(name: Symbol): Object = if (contains(name)) get(name).get else throw new IllegalArgumentException("Unknown data field '"+name+"'")
@@ -38,7 +38,7 @@ trait Data {
 
   // Getter utilities
   def get(name: Symbol, default: Object): Object = get(name).getOrElse(default)
-  def getAs[T](name: Symbol): Option[T] = if (contains(name) && apply(name).isInstanceOf[T]) Some(apply(name)) else None
+  def getAs[T](name: Symbol): Option[T] = if (contains(name) && apply(name).isInstanceOf[T]) Some(applyAs[T](name)) else None
   def getAs[T](name: Symbol, default: T): T = getAs[T](name).getOrElse(default)
 
   // Getter utilities for specific types
