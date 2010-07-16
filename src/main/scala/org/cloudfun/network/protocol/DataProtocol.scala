@@ -4,8 +4,6 @@ import _root_.org.apache.mina.core.buffer.IoBuffer
 import _root_.org.apache.mina.core.session.IoSession
 import _root_.org.apache.mina.filter.codec._
 import _root_.org.cloudfun.data.Data
-import _root_.org.skycastle.entity.EntityId
-import java.nio.ByteBuffer
 
 /**
  * A way of encoding and decoding Messages to and from a stream of bytes.
@@ -38,7 +36,7 @@ trait DataProtocol extends ProtocolCodecFactory  {
 
   val decoder: ProtocolDecoder = new ProtocolDecoderAdapter {
     def decode(session: IoSession, in: IoBuffer, out: ProtocolDecoderOutput) = {
-      decodeData(in) foreach out.write(_)
+      decodeData(in) foreach ((d: Data) => out.write(d))
     }
   }
 

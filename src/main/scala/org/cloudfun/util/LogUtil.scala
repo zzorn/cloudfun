@@ -7,9 +7,9 @@ import java.util.logging.{Level, Logger}
  */
 class LogUtil(path : String) extends LogMethods {
 
-  val logger : Logger = Logger.getLogger( path )
+  override lazy val logger : Logger = Logger.getLogger( path )
 
-  def log(level: Level, message: => String, exception: => Throwable)  {
+  override def log(level: Level, message: => String, exception: => Throwable)  {
 
     if (logger != null && logger.isLoggable(level) )
     {

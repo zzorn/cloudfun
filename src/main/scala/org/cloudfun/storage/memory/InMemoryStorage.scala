@@ -9,10 +9,10 @@ class InMemoryStorage extends Storage {
 
   private val objects: HashSet[Storable] = new HashSet()
 
-  def delete(ref: Ref[_]) = objects.remove(ref())
+  def delete[T <: Storable](ref: Ref[T]) = objects.remove(ref())
   def delete(obj: Storable) = objects.remove(obj)
 
-  def get[T](ref: Ref[T]) = ref()
+  def get[T <: Storable](ref: Ref[T]) = ref()
   
   def getReference[T <: Storable](obj: T) = {
     if (!objects.contains(obj)) objects.add(obj)

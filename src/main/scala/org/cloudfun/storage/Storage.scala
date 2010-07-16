@@ -22,12 +22,12 @@ trait Storage {
   /**
    * Returns the object for the specified reference, or throws an exception if it was not found.
    */
-  def get[T](ref: Ref[T]): T
+  def get[T <: Storable](ref: Ref[T]): T
 
   /**
    * Deletes the referenced object if it exists.
    */
-  def delete(ref: Ref[_])
+  def delete[T <: Storable](ref: Ref[T])
 
   /**
    * Deletes the specified object if it is stored.

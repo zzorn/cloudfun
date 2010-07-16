@@ -2,16 +2,15 @@ package org.cloudfun.data
 
 object EmptyData extends Data {
   def get(name: Symbol) = None
-  def apply(name: Symbol) = throw new IllegalArgumentException("No such property exists: '"+name+"'")
-  def asMap = Map()
-  def keys = Nil
+  def properties = Nil
+  override def toMap = Map()
   def contains(name: Symbol) = false
 }
 
 case class MapData(values: Map[Symbol, Object]) extends Data {
-  def apply(name: Symbol) = values(name)
-  def asMap = values
-  def keys = values.keys
+  def get(name: Symbol) = values.get(name)
+  def properties = values.keys
+  override def toMap = values
   def contains(name: Symbol) = values.contains(name)
 }
 

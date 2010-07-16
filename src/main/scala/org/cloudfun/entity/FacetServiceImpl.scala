@@ -1,9 +1,10 @@
 package org.cloudfun.entity
 
+import _root_.org.cloudfun.storage.Storage
 import org.cloudfun.data.Data
 import org.cloudfun.CloudFun
 
-class FacetServiceImpl extends FacetService {
+class FacetServiceImpl(storage: Storage) extends FacetService {
 
   private var _facetTypes: Map[Symbol, Class[_ <: Facet]] = null
 
@@ -34,7 +35,7 @@ class FacetServiceImpl extends FacetService {
       try {
         val facet = facetTypes(facetName).newInstance
         facet.initialize(parameters.asInstanceOf[Data])
-        CloudFun.storage.store(facet)
+        storage.store(facet)
         return Some(facet)
       }
       catch {

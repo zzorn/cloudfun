@@ -9,7 +9,7 @@ class ObjectData extends MutableData {
 
   def properties = null
 
-  def contains(name: Symbol) = null
+  def contains(name: Symbol) = false
 
   def get(name: Symbol) = null
 }

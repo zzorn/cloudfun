@@ -1,6 +1,6 @@
 package org.cloudfun.util
 
-import java.util.logging.{Level}
+import _root_.java.util.logging.{Logger, Level}
 
 /**
  * A mixin that provides various logging methods that call a generic logging method.
@@ -11,7 +11,13 @@ import java.util.logging.{Level}
 // TODO: Does this mean that we instead create a lot of instances of abstract classes that are passed to the log methods?
 trait LogMethods {
 
-  def log( level : Level, message : => String , exception : => Throwable )
+  def loggingPath = getClass().getName
+
+  lazy val logger : Logger = Logger.getLogger( loggingPath )
+
+  def log(level: Level, message: => String, exception: => Throwable)  {
+    if (logger != null && logger.isLoggable(level) ) logger.log( level, message, exception )
+  }
 
 
   final def logError( message : => String ) { log( Level.SEVERE, message ) }
@@ -33,7 +39,6 @@ trait LogMethods {
   //def finer( message : => String , exception : => Throwable )= log( Level.FINER, message, exception )
 
   final def log( level : Level, message : => String ) : Unit = { log( level, message, null ) }
-
 
 }
 

@@ -1,5 +1,5 @@
 package org.cloudfun.network.protocol
-p
+
 /**
  * Something that can be converted to types that the normal serializers can handle.
  *

@@ -10,12 +10,14 @@ import org.cloudfun.util.options.OptionParser
 /**
  * 
  */
+// TODO: Merge with other server class
+@Deprecated
 object CloudFunServer {
 
   def main(args: Array[String]) {
     var dataPath: String = "./data"
     var memory = false
-    var port: String = "7766"
+    var port: Int = 7766
     val parser = new OptionParser("CloudFunServer") {
       opt("d", "data", "root directory for database, defaults to " + dataPath, {v: String => dataPath = v})
       booleanOpt("m", "memory", "keeps all data in memory, and does not save it to disk, defaults to " + memory, {v: Boolean => memory = v})
@@ -30,7 +32,8 @@ object CloudFunServer {
         new InMemoryStorage()
       }
       else throw new UnsupportedOperationException("Not yet implemented")
-      CloudFun.storage = storage
+
+      //CloudFun.storage = storage
 
       // Initialize gametime
       println("== Gametime setup ==")

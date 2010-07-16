@@ -20,18 +20,22 @@ class MongoDbStorage(address: ServerAddress, secondaryAddress: ServerAddress = n
     new Mongo(address, secondaryAddress)
   }
 
-  private val database: DB = mongo.connect(databaseName)
+  private val database: DB = mongo.getDB(databaseName)
   private val entityCollection = new MongoCollection[Storable] {
     val underlying = database.getCollection("entities")
 
     def serializer = new Serializer[Storable] {
+
       def in(obj: Storable): DBObject = {
+        throw new UnsupportedOperationException("Not implemented yet") // TODO
+/*
         val dbo = new DBObject()
         obj.keys
+*/
       }
 
       def out(dbo: DBObject): scala.Option[Storable] = {
-
+        throw new UnsupportedOperationException("Not implemented yet") // TODO
       }
 
     }
@@ -47,26 +51,26 @@ class MongoDbStorage(address: ServerAddress, secondaryAddress: ServerAddress = n
 
 
   def store(obj: Storable) {
-    if (obj != null) entityCollection.insert(obj)
+    if (obj != null) entityCollection += obj
   }
 
   def delete(obj: Storable) {
-    if (obj != null) entityCollection.remove(obj)
+    if (obj != null) entityCollection -= obj
   }
 
-  def delete(ref: Ref[_]) {
-    delete( get(ref))
+  def delete[T <: Storable](ref: Ref[T]) {
+    delete( get[T](ref))
   }
 
-  def get[T](ref: Ref[T]): Storable = {
-    entityCollection.findOne(new BasicDBObject("_id", ref.asInstanceOf[MongoRef].id))
+  def get[T <: Storable](ref: Ref[T]): T = {
+    entityCollection(ref.asInstanceOf[MongoRef[T]].id).asInstanceOf[T]
   }
 
-  def getReference[T <: Storable](obj: T): Ref = {
-    var id: ObjectId = obj.get("_id").asInstanceOf[ObjectId]
+  def getReference[T <: Storable](obj: T): Ref[T] = {
+    var id: ObjectId = obj.get('_id).asInstanceOf[ObjectId]
     if (id == null) {
       id = new ObjectId()
-      obj.set("_id", id)
+      obj.set('_id, id)
     }
 
     return MongoRef[T](id)

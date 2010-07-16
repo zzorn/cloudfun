@@ -1,6 +1,6 @@
 package org.cloudfun.entity
 
-import org.cloudfun.data.Data
+import _root_.org.cloudfun.data.{MutableMapData, Data}
 import org.cloudfun.storage.{Ref, Storable}
 import org.cloudfun.util.ListenableList
 import org.cloudfun.CloudFun
@@ -11,7 +11,8 @@ object Entity {
     val entity: Entity = new Entity()
 
     // Create facets
-    def createFacet(entry: (Symbol, Data)): Option[Facet] = CloudFun.facetService.createFacet(entry._1, entry._2)
+    def createFacet(entry: (Symbol, Data)): Option[Facet] = //CloudFun.facetService.createFacet(entry._1, entry._2)
+      throw new UnsupportedOperationException("Not implemented yet") // TODO
 /* TODO
     Entity((entityDefinition.evaluate().asInstanceOf[Data].values map createFacet).flatten)
 */
@@ -23,11 +24,15 @@ object Entity {
   def apply(facets: Iterable[Facet]): Entity = {
     val entity: Entity = new Entity()
 
+    throw new UnsupportedOperationException("Not implemented yet") // TODO
+/*
     // Set facets
     facets foreach {(f:Facet) => entity.addFacet(f)}
+*/
 
     // Store entity
-    CloudFun.storage.store(entity)
+    throw new UnsupportedOperationException("Not implemented yet") // TODO
+    //CloudFun.storage.store(entity)
 
     entity
   }
@@ -38,15 +43,18 @@ object Entity {
 /**
  *  A persistent object consisting of different parts (facets).
  */
-class Entity extends Storable {
+class Entity extends MutableMapData with Storable {
 
-  val facets = list[Ref[Facet]]('facets)
+  // TODO
+//  val facets = list[Ref[Facet]]('facets)
   
+/*
   def addFacet(facet: Facet) {
     val r = facet.ref
     if (!facets.contains(r)) {
       facets += r
-      facet.entity := this.ref[Entity]
+      throw new UnsupportedOperationException("Not implemented yet") // TODO
+      //facet.entity := this.ref[Entity]
     }
   }
 
@@ -54,26 +62,32 @@ class Entity extends Storable {
     val r = facet.ref
     if (facets.contains(r)) {
       facets -= r
-      facet.entity := null
+      throw new UnsupportedOperationException("Not implemented yet") // TODO
+      //facet.entity := null
     }
   }
 
   def facet[T <: Facet](implicit m: Manifest[T]): Option[T] = facets().map(_.get).find(f => m.erasure.isInstance(f)).asInstanceOf[Option[T]]
+*/
 
   /**
    * Removes the entity and its facets from persistent storage.
    */
   override final def delete() {
+/*
     // Delete facets
     facets().foreach {f: Ref[Facet] => f().delete() }
+*/
 
     // Delete self
     super.delete()
   }
 
+/*
   override def toString(): String = {
     "Entity " + hashCode + "¸ facets: " + facets().map(_.get()).mkString("[", ", ", "]")
   }
+*/
 
   /**
    * Replaces this entity with the specified new entities, at the same location.

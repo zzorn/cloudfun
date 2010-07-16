@@ -20,7 +20,8 @@ trait Storable extends MutableData {
   def store() = storage.store(this)
   def delete() = storage.delete(this)
 
-  protected def storage: Storage = CloudFun.storage
+  protected def storage: Storage = //CloudFun.storage
+    throw new UnsupportedOperationException("Not implemented yet") // TODO
 
 /*
   // TODO: mark non-serializable

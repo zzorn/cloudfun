@@ -8,6 +8,8 @@ import _root_.org.cloudfun.storage.{Storable, Ref}
  * 
  */
 case class MongoRef[T <: Storable](id: ObjectId) extends Ref[T] {
-  override def apply(): T = CloudFun.storage.get(this)
+
+  override def apply(): T = //CloudFun.storage.get(this)
+    throw new UnsupportedOperationException("Not implemented yet") // TODO
 }
 

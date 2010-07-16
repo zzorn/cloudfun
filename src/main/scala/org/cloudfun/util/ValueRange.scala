@@ -27,22 +27,22 @@ case class Between(min: Double, max: Double) extends ValueRange {
 }
 
 case class Above(min: Double) extends ValueRange {
-  val max = Math.POS_INF_DOUBLE
+  val max = Double.PositiveInfinity
 }
 
 case class Below(max: Double) extends ValueRange {
-  val min = Math.NEG_INF_DOUBLE
+  val min = Double.NegativeInfinity
 }
 
 case object AllValues extends ValueRange {
-  val min = Math.NEG_INF_DOUBLE
-  val max = Math.POS_INF_DOUBLE
+  val min = Double.NegativeInfinity
+  val max = Double.PositiveInfinity
 }
 
 case object NoValues extends ValueRange {
-  val min = Math.NaN_DOUBLE
-  val max = Math.NaN_DOUBLE
-  override def average = Math.NaN_DOUBLE
+  val min = Double.NaN
+  val max = Double.NaN
+  override def average = Double.NaN
   override def intersects(other: ValueRange) = false
   override def contains(other: ValueRange) = false
   override def contains(v: Double) = false

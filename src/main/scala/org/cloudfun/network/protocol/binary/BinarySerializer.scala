@@ -3,8 +3,9 @@ package org.cloudfun.network.protocol.binary
 import _root_.java.nio.charset.{Charset, CharsetEncoder}
 import _root_.org.apache.mina.core.buffer.IoBuffer
 import _root_.org.bson.types.ObjectId
-import _root_.org.cloudfun.data.Data
+import _root_.org.cloudfun.data.{MutableMapData, Data}
 import _root_.org.cloudfun.network.protocol.{Transferable, ProtocolLogger}
+
 /**
  * Takes care of serializing and deserializing a set of allowed types from byte buffers.
  */
@@ -36,7 +37,7 @@ class BinarySerializer {
     else getSerializer(value) match {
       case Some(serializer) => {
         buffer.put(serializer.id)
-        serializer.encode(buffer, value)
+        serializer.enc(buffer, value)
       }
       case None => {
         ProtocolLogger.logWarning( "When encoding message: No encoder found for object '"+value+"', substituting with null." )
@@ -48,8 +49,8 @@ class BinarySerializer {
   def decode[T](buffer: IoBuffer) : T = {
     val valueType = buffer.get
     if (valueType == NULL_ID) null.asInstanceOf[T]
-    else idToSerializer.get(valueType) match {
-      case Some(serializer ) => serializer.decode( buffer )
+    else idToSerializer.get(valueType).asInstanceOf[Option[TypeSerializer[T]]] match {
+      case Some(serializer) => serializer.dec(buffer)
       case None => {
         ProtocolLogger.logInfo( "When decoding message: Unknown object type '"+valueType+"', substituting with null." )
         null.asInstanceOf[T]
@@ -212,24 +213,25 @@ class BinarySerializer {
     // TODO: How to serialize and instantiate Data?
     add( new TypeSerializer[Data]( classOf[Data] ) {
       def enc(buffer: IoBuffer, value: T) {
-        buffer.putInt( value.entries.size )
-        value.entries foreach {case (key, value) =>
+        val entries = value.toMap
+        buffer.putInt( entries.size )
+        entries foreach {case (key, value) =>
           symbolSerializer.enc( buffer, key )
           anySerializer.encode( buffer, value )
         }
       }
       def dec(buffer: IoBuffer) = {
         var numEntries = buffer.getInt()
-        var resultMap : Map[Symbol,Any] = Map()
+        var resultMap : Map[Symbol,Object] = Map()
         while (numEntries > 0) {
-          val key = symbolSerializer.decode( buffer )
-          val value = anySerializer.decode[Any]( buffer )
+          val key = symbolSerializer.dec( buffer )
+          val value = anySerializer.decode[Object]( buffer )
           val entry = (key, value)
           resultMap = resultMap + entry
           numEntries -= 1
         }
 
-        new Data( resultMap )
+        new MutableMapData( resultMap )
       }
     })
 

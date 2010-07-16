@@ -1,8 +1,8 @@
 package org.cloudfun.network.protocol.binary
 
 
+import _root_.org.apache.mina.core.buffer.IoBuffer
 import java.math.BigInteger
-import java.nio.ByteBuffer
 
 /**
  * Utility methods for dealing with packed numbers.
@@ -15,9 +15,9 @@ object PackedNumbers {
   /**
    * Encodes values between around -110 to 127 in one byte, and larger values in as many bytes as necessary + 1
    */
-  def encode( buffer : ByteBuffer, value : Long ) {
+  def encode( buffer : IoBuffer, value : Long ) {
 
-    if (value > Math.MIN_BYTE + MAX_NUMBER_OF_NUMBER_BYTES && value <= Math.MAX_BYTE) {
+    if (value > Byte.MinValue + MAX_NUMBER_OF_NUMBER_BYTES && value <= Byte.MaxValue) {
       // The number fits in one byte, above the number-of-bytes indicator area
       buffer.put(value.toByte)
     }
@@ -30,7 +30,7 @@ object PackedNumbers {
       else if (numBytes <= 0) throw new IllegalStateException( "Problem when encoding packed number "+value+", empty representation." )
 
       // Encode number of bytes used near the negative lower range of a byte
-      val indicatorByte : Byte = (Math.MIN_BYTE + numBytes).toByte
+      val indicatorByte : Byte = (Byte.MinValue + numBytes).toByte
       buffer.put( indicatorByte )
       buffer.put( bytes )
     }
@@ -39,16 +39,16 @@ object PackedNumbers {
   /**
    * Extracts an encoded packed number.
    */
-  def decode( buffer : ByteBuffer ) : Long = {
+  def decode( buffer : IoBuffer ) : Long = {
     val indicatorByte : Byte = buffer.get
 
-    if (indicatorByte > Math.MIN_BYTE + MAX_NUMBER_OF_NUMBER_BYTES) {
+    if (indicatorByte > Byte.MinValue + MAX_NUMBER_OF_NUMBER_BYTES) {
       // The number is small, was stored in the first byte
       indicatorByte.toLong
     }
     else {
       // Extract number of bytes in representation
-      val numBytes = (indicatorByte.toInt) - Math.MIN_BYTE
+      val numBytes = (indicatorByte.toInt) - Byte.MinValue
 
       // Sanity checking
       if (numBytes > MAX_NUMBER_OF_NUMBER_BYTES) throw new IllegalStateException( "Problem when decoding packed number, too many bytes in representation ("+numBytes+")." )

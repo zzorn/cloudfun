@@ -1,8 +1,6 @@
 package org.cloudfun.util
 
-import _root_.scala.runtime.RichString
 import java.nio.ByteBuffer
-import sun.misc.Regexp
 import java.util.regex.Pattern
 
 /**
@@ -45,7 +43,7 @@ object StringUtils {
    * Converts a list of comma separated tokens in a string to a list of Symbols.
    */
   def commaSeparatedStringToSymbolList( s : String) : List[Symbol] = {
-    List.fromString( s, ',' ).flatMap( {entry : String =>
+    s.split(',').toList.flatMap( {entry : String =>
        val trimmedEntry = entry.trim()
        if ( trimmedEntry.length > 0) {
          List( Symbol( trimmedEntry ) )
