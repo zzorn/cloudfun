@@ -7,6 +7,7 @@ import util.{StringUtils, OneLineLogFormatter, LogMethods}
 /**
  * Trait for central CloudFun services.
  */
+// TODO: Move to utils?
 trait CloudFunService extends LogMethods {
 
   private var running = false
