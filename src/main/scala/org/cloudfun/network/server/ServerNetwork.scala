@@ -25,7 +25,7 @@ class ServerNetwork(authenticator: Authenticator) extends Network {
 
     // TODO: Add possibility of blacklisting certain IP numbers / ranges for counter DDoS purposes - is that effective?
 
-    acceptor.getFilterChain().addLast( "executor", new ExecutorFilter())
+    acceptor.getFilterChain().addLast( "executor", new ExecutorFilter()) // Multithreaded executor pool
 
     // TODO: Add SSL filter for encryption
 

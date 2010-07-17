@@ -6,6 +6,7 @@ import _root_.org.cloudfun.data.Data
 /**
  * A service for storing objects persistently and retrieving them.
  */
+// TODO: Add name bindings, they are necessary
 trait Storage extends CloudFunService {
 
   private var serializers: List[Serializer] = Nil
