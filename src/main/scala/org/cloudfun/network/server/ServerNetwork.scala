@@ -2,6 +2,7 @@ package org.cloudfun.network
 
 import _root_.org.apache.mina.core.session.IdleStatus
 import _root_.org.apache.mina.filter.codec.ProtocolCodecFilter
+import _root_.org.apache.mina.filter.executor.ExecutorFilter
 import _root_.org.apache.mina.filter.logging.LoggingFilter
 import _root_.org.apache.mina.transport.socket.nio.NioSocketAcceptor
 import _root_.org.cloudfun.authentication.Authenticator
@@ -22,19 +23,20 @@ class ServerNetwork(authenticator: Authenticator) extends Network {
   override protected def onInit() {
     acceptor = new NioSocketAcceptor()
 
-    // TODO: Add threadpooling filter?
-    
+    // TODO: Add possibility of blacklisting certain IP numbers / ranges for counter DDoS purposes - is that effective?
+
+    acceptor.getFilterChain().addLast( "executor", new ExecutorFilter())
+
+    // TODO: Add SSL filter for encryption
+
     acceptor.getFilterChain().addLast( "codec", new ProtocolCodecFilter(new BinaryProtocol()))
     if (logMessages()) acceptor.getFilterChain().addLast( "logger", new LoggingFilter() )
     acceptor.getFilterChain().addLast( "authenticator", new AuthenticationFilter(authenticator))
 
     acceptor.setHandler( new ClientConnectionHandler() )
     acceptor.getSessionConfig().setIdleTime(IdleStatus.READER_IDLE, idleTime())
-//  acceptor.setReuseAddress(true)  // Should we use this?
+//  acceptor.setReuseAddress(true)  // TODO: Should we use this?  What does it do?
 
-    // TODO: Add SSL filter for encryption
-
-    // TODO: Add possibility of blacklisting certain IP numbers / ranges for counter DDoS purposes - is that effective?
   }
 
   override protected def onStart() = acceptor.bind

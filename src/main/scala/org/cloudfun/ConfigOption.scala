@@ -17,8 +17,10 @@ case class ConfigOption[T](abbreviation: String, name: String, default: T, descr
   private var configProvided = false
   private var configValue: T = _
 
+  /** The configuration value, or the default value if no value has been set yet */
   def value: T = if (configProvided) configValue else default
 
+  /** The configuration value, or the default value if no value has been set yet */
   def apply() = value
 
   def set(value: T) {

@@ -1,8 +1,10 @@
 package org.cloudfun.network
 
-import _root_.java.util.logging.Logger
 import _root_.org.apache.mina.core.service.IoHandlerAdapter
 import _root_.org.apache.mina.core.session.{IdleStatus, IoSession}
+import _root_.org.cloudfun.data.Data
+import _root_.org.cloudfun.entity.Entity
+import _root_.org.cloudfun.storage.Ref
 import _root_.org.cloudfun.util.LogMethods
 
 /**
@@ -18,7 +20,17 @@ class ClientConnectionHandler extends IoHandlerAdapter with LogMethods {
   }
 
   override def messageReceived(session: IoSession, message: Any) = {
+    message match {
+      case d: Data =>
+        // Find the account / avatar to handle the message
+        val accountEntity = session.getAttribute("ACCOUNT").asInstanceOf[Ref[Entity]]()
 
+        // Send / schedule message
+        // TODO
+
+      case null => logError("Null message")
+      case _ => logError("Unknown message type: " + message.asInstanceOf[Object].getClass)
+    }
   }
 
   override def exceptionCaught(session: IoSession, cause: Throwable) = {

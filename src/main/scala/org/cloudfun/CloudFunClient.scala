@@ -1,6 +1,7 @@
 package org.cloudfun
 
 import authentication.DummyTestAuthenticator
+import game.DefaultGameService
 import network.client.ClientNetwork
 import scheduler.single.SingleThreadedScheduler
 import storage.memory.InMemoryStorage
@@ -14,12 +15,19 @@ object CloudFunClientApp extends CloudFunClient()
  */
 class CloudFunClient(runUpdateThread: Boolean = true) extends CloudFun {
 
-  val clock = RealClock
-  val storage = new InMemoryStorage()
-  val _scheduler = new SingleThreadedScheduler(clock, !runUpdateThread)
-  val network = new ClientNetwork()
-  val authenticator = new DummyTestAuthenticator()
+  val _clock = RealClock
+  val _storage = new InMemoryStorage()
+  val _scheduler = new SingleThreadedScheduler(_clock, !runUpdateThread)
+  val _network = new ClientNetwork()
+  val _gameService = new DefaultGameService(this)
+  val _authenticator = new DummyTestAuthenticator(_storage, _gameService)
+
+  def gameService = _gameService
   def scheduler = _scheduler
+  def clock = _clock
+  def storage = _storage
+  def network = _network
+  def authenticator  = _authenticator
 
   /**
    * Can be called periodically to manually advance the simulation, if runUpdateThread is set to false.

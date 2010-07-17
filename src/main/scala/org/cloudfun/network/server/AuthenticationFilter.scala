@@ -2,8 +2,10 @@ package org.cloudfun.network.server
 
 import _root_.org.apache.mina.core.filterchain.{IoFilter, IoFilterAdapter}
 import _root_.org.apache.mina.core.session.IoSession
-import _root_.org.cloudfun.authentication.{AccountCreationError, AccountCreated, Authenticator, Account}
-import _root_.org.cloudfun.data.{MutableMapData, Data, MutableData}
+import _root_.org.cloudfun.authentication.{AccountCreationError, AccountCreated, Authenticator}
+import _root_.org.cloudfun.data.{MutableMapData, Data}
+import _root_.org.cloudfun.entity.Entity
+import _root_.org.cloudfun.storage.Ref
 import _root_.org.cloudfun.util.LogMethods
 
 /**
@@ -55,7 +57,7 @@ class AuthenticationFilter(authenticator: Authenticator) extends IoFilterAdapter
         case Some((acc, pw)) => authenticator.authenticate(acc, pw) match {
           case Some(account) =>
             session.setAttribute("ACCOUNT", account)
-            logInfo("Session " + session + " logged in.")
+            logInfo("User " + acc + " logged in.")
             session.write(loginOk)
           case None => onError(invalidLogin)
         }
@@ -69,7 +71,7 @@ class AuthenticationFilter(authenticator: Authenticator) extends IoFilterAdapter
         case Some((acc, pw)) => authenticator.createAccount(acc, pw) match {
           case AccountCreated(account) =>
             session.setAttribute("ACCOUNT", account)
-            logInfo("Session " + session + " created a new account: " + acc)
+            logInfo("Created a new account for user " + acc)
             session.write(createdOk)
           case AccountCreationError(errorCode) =>
             onError(createResponse('accountCreationResponse, errorCode))
@@ -80,7 +82,7 @@ class AuthenticationFilter(authenticator: Authenticator) extends IoFilterAdapter
 
     message match {
       case data: Data =>
-        val account = session.getAttribute("ACCOUNT").asInstanceOf[Account]
+        val account = session.getAttribute("ACCOUNT").asInstanceOf[Ref[Entity]]
         if      (account == null && data.get('type, null) == 'login) login(data)
         else if (account == null && data.get('type, null) == 'createAccount) createAccount(data)
         else if (account == null) onError(notAuthenticatedError) // Not logged in and didnt get login message

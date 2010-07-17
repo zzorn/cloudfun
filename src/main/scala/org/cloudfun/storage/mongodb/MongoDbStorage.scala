@@ -9,6 +9,7 @@ import _root_.org.cloudfun.storage.{Ref, Storable, Storage}
 /**
  * 
  */
+// TODO: Use different names for the database depending on the game name?  So that it is a bit more easy to run different games without having them mess up each others databases accidentally?
 class MongoDbStorage() extends Storage {
 
   val masterStorage = conf[String]("s",  "storage",            ServerAddress.defaultHost, "Primary MongoDB server address.")
@@ -82,6 +83,7 @@ class MongoDbStorage() extends Storage {
     if (id == null) {
       id = new ObjectId()
       obj.set('_id, id)
+      store(obj)
     }
 
     return MongoRef[T](id)

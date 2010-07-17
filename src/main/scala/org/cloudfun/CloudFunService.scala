@@ -14,7 +14,7 @@ trait CloudFunService extends LogMethods {
 
   final var configOptions: List[ConfigOption[_]] = Nil
 
-  /** Adds a config option to the service.  Returns the config option. */
+  /** Adds a config option to the service.  Returns the ConfigOption, which can be queried for the config value after init has been called. */
   final def conf[T](abbreviation: String, name: String, default: T, desc: String)(implicit kind: ClassManifest[T]): ConfigOption[T] = {
     val opt = new ConfigOption[T](abbreviation, name, default, desc, kind.erasure.asInstanceOf[Class[T]])
     configOptions = configOptions ::: List(opt)
@@ -29,17 +29,16 @@ trait CloudFunService extends LogMethods {
   def serviceName: String = StringUtils.removeTrailing(getClass.getSimpleName, "$") // Remove the trailing $:s that are added by Scala to object instances.
 
   /** Initialize and configure the service */
-  final def init(configValues: Map[String, Object]) {
+  final def init() {
     if (isRunning) throw new IllegalStateException(serviceName + " is running, can not initialize it")
 
     logInfo("Initializing " + serviceName)
 
-    subServices foreach (_.init(configValues))
+    subServices foreach (_.init())
 
-    configOptions foreach (_.readValue(configValues))
-
+    // Log used config options for this service
     configOptions foreach (o => logInfo("  " + o.toKeyValueString))
-    
+
     onInit()
 
     logDebug("Initialized "+ serviceName)
@@ -84,17 +83,26 @@ trait CloudFunService extends LogMethods {
     val rootLogger = Logger.getLogger("")
     rootLogger.getHandlers foreach (h => h.setFormatter(OneLineLogFormatter))
 
+    // Display program name
     logInfo("Running " + serviceName)
     // TODO: Get current version / build from somewhere?
 
     // Get command line options expected by this service and any subservices and parse inputs
-    val parser = new OptionParser(serviceName)
+    val parser = new OptionParser(serviceName, true)
+    parser.help("h", "help")
     allConfigOptions foreach (o => parser.add(o.commandLineOption))
     if (parser.parse(args)) {
-      init(Map())
-      start()
-    } else {
-      logError("Could not parse command line options, aborted.")
+
+      // TODO: Load options from any specified (or default?) config file
+      //configOptions foreach (_.readValue(configFileValues))
+
+      try {
+        init()
+        start()
+      }
+      catch {
+        case e: InitializationError => logError(e.service + ": " + e.message, e.cause)
+      }
     }
   }
 
