@@ -2,16 +2,14 @@ package org.cloudfun.entity
 
 import _root_.org.cloudfun.messaging.MessageReceiver
 import org.cloudfun.scheduler.Taskable
-import org.cloudfun.data.Data
 import org.cloudfun.storage.{Ref, Storable}
 import org.cloudfun.scheduler.Taskable
-import org.cloudfun.data.Data
-
+import org.cloudfun.data.{MutableData, Data}
 
 /**
  * A part of an entity, concentrating on a specific area of functionality.
  */
-trait Facet extends Storable with Taskable with MessageReceiver {
+trait Facet extends MutableData with Storable with Taskable with MessageReceiver {
 
 /*
   /**

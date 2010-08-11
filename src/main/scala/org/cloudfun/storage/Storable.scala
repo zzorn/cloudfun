@@ -6,7 +6,7 @@ import _root_.java.io.Serializable
 import _root_.java.lang.String
 import _root_.java.util.{HashMap, Map}
 import _root_.org.bson.BSONObject
-import _root_.org.cloudfun.data.{MutableMapData, MutableData, Data}
+import _root_.org.cloudfun.data.{MutableData, Data}
 import org.cloudfun.CloudFun
 
 
@@ -14,7 +14,7 @@ import org.cloudfun.CloudFun
  * Persistent object.
  */
 // TODO: Save to and load from JSon style key-value map?
-trait Storable extends MutableData {
+trait Storable extends Data {
 
   def ref[T <: Storable]: Ref[T] = storage.getReference[T](this.asInstanceOf[T])
   def store() = storage.store(this)

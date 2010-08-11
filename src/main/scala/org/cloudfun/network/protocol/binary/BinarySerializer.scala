@@ -3,7 +3,7 @@ package org.cloudfun.network.protocol.binary
 import _root_.java.nio.charset.{Charset, CharsetEncoder}
 import _root_.org.apache.mina.core.buffer.IoBuffer
 import _root_.org.bson.types.ObjectId
-import _root_.org.cloudfun.data.{MutableMapData, Data}
+import _root_.org.cloudfun.data.{MutableData, Data}
 import _root_.org.cloudfun.network.protocol.{Transferable, ProtocolLogger}
 
 /**
@@ -231,7 +231,7 @@ class BinarySerializer {
           numEntries -= 1
         }
 
-        new MutableMapData( resultMap )
+        new MutableData( resultMap )
       }
     })
 

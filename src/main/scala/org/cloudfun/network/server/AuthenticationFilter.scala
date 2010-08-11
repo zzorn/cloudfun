@@ -3,7 +3,7 @@ package org.cloudfun.network.server
 import _root_.org.apache.mina.core.filterchain.{IoFilter, IoFilterAdapter}
 import _root_.org.apache.mina.core.session.IoSession
 import _root_.org.cloudfun.authentication.{AccountCreationError, AccountCreated, Authenticator}
-import _root_.org.cloudfun.data.{MutableMapData, Data}
+import _root_.org.cloudfun.data.{MutableData, Data}
 import _root_.org.cloudfun.entity.Entity
 import _root_.org.cloudfun.storage.Ref
 import _root_.org.cloudfun.util.LogMethods
@@ -14,7 +14,7 @@ import _root_.org.cloudfun.util.LogMethods
 class AuthenticationFilter(authenticator: Authenticator) extends IoFilterAdapter with LogMethods {
 
   private def createResponse(responseType: Symbol, desc: Symbol): Data = {
-    val response = new MutableMapData()
+    val response = new MutableData()
     response.set('type, responseType)
     response.set('desc, desc)
     response

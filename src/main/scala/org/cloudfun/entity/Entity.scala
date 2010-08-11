@@ -1,6 +1,6 @@
 package org.cloudfun.entity
 
-import _root_.org.cloudfun.data.{MutableMapData, Data}
+import _root_.org.cloudfun.data.{MutableData, Data}
 import org.cloudfun.storage.{Ref, Storable}
 import org.cloudfun.util.ListenableList
 import org.cloudfun.CloudFun
@@ -43,7 +43,7 @@ object Entity {
 /**
  *  A persistent object consisting of different parts (facets).
  */
-class Entity extends MutableMapData with Storable {
+class Entity extends MutableData with Storable {
 
   // TODO
 //  val facets = list[Ref[Facet]]('facets)

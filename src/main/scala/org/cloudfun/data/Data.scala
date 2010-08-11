@@ -1,29 +1,43 @@
 package org.cloudfun.data
 
-object EmptyData extends Data {
-  def get(name: Symbol) = None
-  def properties = Nil
-  override def toMap = Map()
-  def contains(name: Symbol) = false
-}
-
-case class MapData(values: Map[Symbol, Object]) extends Data {
-  def get(name: Symbol) = values.get(name)
-  def properties = values.keys
-  override def toMap = values
-  def contains(name: Symbol) = values.contains(name)
-}
-
 /**
  * Collection of key-value properties.
  */
 trait Data {
+
+  // TODO: Can we refer to containing class somehow?
+  protected val self: Data = this
+
+  case class Field[T](name: Symbol) {
+    def apply(): T = self.getAs[T](name).get
+    def get(): Option[T]   = self.getAs[T](name)
+    def := (v: T) = self.set(name, v.asInstanceOf[Object])
+  }
+
+  protected def field[T](name: Symbol, value: T = null) = makeField[T](name, value)
+  protected def bool(name: Symbol, value: Boolean = false) = makeField[Boolean](name, value)
+  protected def int(name: Symbol, value: Int = 0) = makeField[Int](name, value)
+  protected def long(name: Symbol, value: Long = 0) = makeField[Long](name, value)
+  protected def float(name: Symbol, value: Float= 0f) = makeField[Float](name, value)
+  protected def double(name: Symbol, value: Double= 0.0) = makeField[Double](name, value)
+  protected def string(name: Symbol, value: String = "") = makeField[String](name, value)
+  protected def data(name: Symbol, value: Data = null) = makeField[Data](name, value)
+  protected def list[E](name: Symbol, value: List[E] = Nil) = makeField[List[E]](name, value)
+
+  private def makeField[T](name: Symbol, value: T) {
+    set(name, value.asInstanceOf[Object])
+    Field[T](name)
+  }
 
   /** Get property if found */
   def get(name: Symbol): Option[Object]
 
   /** True if a property with the specified name is present. */
   def contains(name: Symbol): Boolean
+
+  def set(name: Symbol, value: Object)
+
+  def update(name: Symbol, value: Object) = set(name, value)
 
   /** The available properties. */
   def properties: Iterable[Symbol]
@@ -49,6 +63,7 @@ trait Data {
   def getString(name: Symbol, default: String) = getAs[String](name).getOrElse(default)
   def getList(name: Symbol, default: List[Object] = Nil) = getAs[List[Object]](name).getOrElse(default)
   def getData(name: Symbol, default: Data = EmptyData) = getAs[Data](name).getOrElse(default)
+
 
 }
 
