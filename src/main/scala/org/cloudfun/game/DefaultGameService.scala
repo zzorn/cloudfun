@@ -2,13 +2,13 @@ package org.cloudfun.game
 
 import _root_.java.lang.String
 import _root_.org.cloudfun.entity.Entity
-import _root_.org.cloudfun.{InitializationError, CloudFun}
+import org.cloudfun.{GameServer, InitializationError, CloudFun}
 
 /**
  * Default GameService implementation that delegates the actual game initialization and new user initialization
  * to a Game provided as a constructor or command line parameter.
  */
-class DefaultGameService(cloudFun: CloudFun, var game: Game = null) extends GameService {
+class DefaultGameService(gameServer: GameServer, var game: Game = null) extends GameService {
 
   val gameClassName = conf[String]("g", "game-class", "", "The full classname of the Game implementation to run on the server.  E.g. org.cloudfun.examples.ChatGame")
 
@@ -40,12 +40,12 @@ class DefaultGameService(cloudFun: CloudFun, var game: Game = null) extends Game
 
     if (isFirstTime) {
       logInfo("No previous state for the game " + game.name + " found, so setting it up")
-      game.setupGame(cloudFun)
+      game.setupGame(gameServer)
     }
   }
 
   def createEntityForNewUser(userName: String): Entity = {
-    game.createEntityForNewUser(userName, cloudFun)
+    game.createEntityForNewUser(userName, gameServer)
   }
 
 }

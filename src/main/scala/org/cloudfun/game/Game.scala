@@ -1,8 +1,8 @@
 package org.cloudfun.game
 
-import _root_.org.cloudfun.CloudFun
 import _root_.org.cloudfun.entity.Entity
 import _root_.org.cloudfun.util.StringUtils
+import org.cloudfun.{GameServer, CloudFun}
 
 /**
  * A factory that creates the initial state in the game and sets up any recurring simulation or other effects,
@@ -33,7 +33,7 @@ trait Game {
    * Called when the game is started, if it is the first time the game is started.
    * Should initialize the gameworld and set up any simulations or recurring events.
    */
-  def setupGame(context: CloudFun)
+  def setupGame(context: GameServer)
 
   /**
    * Called when a new player creates an account.
@@ -42,6 +42,6 @@ trait Game {
    * and do account specific tasks like configuring an email, but it could also directly be an in-game avatar,
    * depending on the game type.
    */
-  def createEntityForNewUser(userName: String, context: CloudFun): Entity
+  def createEntityForNewUser(userName: String, context: GameServer): Entity
 
 }

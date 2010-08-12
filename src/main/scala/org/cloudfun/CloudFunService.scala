@@ -11,8 +11,14 @@ import util.{StringUtils, OneLineLogFormatter, LogMethods}
 trait CloudFunService extends LogMethods {
 
   private var running = false
+  private var services: List[CloudFunService] = Nil
 
   final var configOptions: List[ConfigOption[_]] = Nil
+
+  protected def service[T <: CloudFunService](service: T): T = {
+    addSubService(service)
+    service
+  }
 
   /** Adds a config option to the service.  Returns the ConfigOption, which can be queried for the config value after init has been called. */
   final def conf[T](abbreviation: String, name: String, default: T, desc: String)(implicit kind: ClassManifest[T]): ConfigOption[T] = {
@@ -75,6 +81,13 @@ trait CloudFunService extends LogMethods {
     logDebug("Stopped " + serviceName)
   }
 
+  private def parseArguments(args: Array[String]) {
+    val parser = new OptionParser(serviceName, true)
+    parser.help("h", "help")
+    allConfigOptions foreach (o => parser.add(o.commandLineOption))
+    if (!parser.parse(args)) throw new InitializationError("Problem when parsing command line arguments.", serviceName, null)
+  }
+
   /** If the service is implemented as an object, automatically provide a main method for starting it and reading command line options. */
   def main(args: Array[String]) {
     // TODO: Add support for reading the configuration from a key-value file, e.g. from the resource path, users home dir, or specified on command line.
@@ -87,22 +100,18 @@ trait CloudFunService extends LogMethods {
     logInfo("Running " + serviceName)
     // TODO: Get current version / build from somewhere?
 
+    // TODO: Load options from any specified (or default?) config file
+    //configOptions foreach (_.readValue(configFileValues))
+
     // Get command line options expected by this service and any subservices and parse inputs
-    val parser = new OptionParser(serviceName, true)
-    parser.help("h", "help")
-    allConfigOptions foreach (o => parser.add(o.commandLineOption))
-    if (parser.parse(args)) {
+    parseArguments(args)
 
-      // TODO: Load options from any specified (or default?) config file
-      //configOptions foreach (_.readValue(configFileValues))
-
-      try {
-        init()
-        start()
-      }
-      catch {
-        case e: InitializationError => logError(e.service + ": " + e.message, e.cause)
-      }
+    try {
+      init()
+      start()
+    }
+    catch {
+      case e: InitializationError => logError(e.service + ": " + e.message, e.cause)
     }
   }
 
@@ -116,7 +125,12 @@ trait CloudFunService extends LogMethods {
   protected def onStop() {}
 
   /** Any services contained in this service, that should be started and stopped when this service is started and stopped. */
-  protected def subServices: List[CloudFunService] = Nil
+  final def subServices: List[CloudFunService] = services
 
+  final def addSubService(service: CloudFunService) {
+    if (isRunning) throw new IllegalStateException("Should not add a service while the engine is running")
+
+    services = service :: services
+  }
 }
 
