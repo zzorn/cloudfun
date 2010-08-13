@@ -18,5 +18,6 @@ class ChatGame extends Game {
 
   def createEntityForNewUser(userName: String, context: GameServer) = new Entity()
 
+  
 }
 
