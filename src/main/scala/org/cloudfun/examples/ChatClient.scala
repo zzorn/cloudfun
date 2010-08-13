@@ -6,7 +6,7 @@ import org.cloudfun.GameClient
  * 
  */
 
-object ChatClient extends GameClient(true, new ChatGame()) {
+object ChatClient extends GameClient() {
 
   // Listen to incoming messages / specify class that does it
 

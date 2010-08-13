@@ -17,7 +17,7 @@ object GameClientApp extends GameClient()
  * Default client side class for CloudFun.
  * @param runUpdateThread if true, will start a thread that periodically calls update when start is called.  Otherwise the user needs to periodically call update.
  */
-class GameClient(runUpdateThread: Boolean = true, game: Game = null) extends CloudFun {
+class GameClient(runUpdateThread: Boolean = true) extends CloudFun {
 
   val clock: Clock = service(RealClock)
   val storage: Storage  = service(new InMemoryStorage())
