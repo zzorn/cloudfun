@@ -8,8 +8,11 @@ import _root_.org.cloudfun.CloudFun
  */
 trait Ref[T <: Storable] extends Serializable {
 
-  /** Returns the referenced object */
-  def apply(): T
+  /**
+   * Returns the referenced object.
+   * Takes the storage to use as an implicit parameter.
+   */
+  final def apply(implicit storage: Storage): T = storage.get(this)
 
 }
 

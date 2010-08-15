@@ -29,7 +29,7 @@ class GameServer(game: Game = null) extends CloudFun {
   val clock: Clock = service(RealClock)
   val storage: Storage = service(new MongoDbStorage())
   val scheduler: Scheduler = service(new PooledScheduler(clock, storage))
-  val network: Network = service(new ServerNetwork(authenticator))
+  val network: Network = service(new ServerNetwork(authenticator, storage))
   val gameService: GameService = service(new DefaultGameService(this, game))
   val authenticator: Authenticator = service(new DummyTestAuthenticator(storage, gameService))
 

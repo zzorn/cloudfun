@@ -4,14 +4,14 @@ import _root_.org.apache.mina.core.service.IoHandlerAdapter
 import _root_.org.apache.mina.core.session.{IdleStatus, IoSession}
 import _root_.org.cloudfun.data.Data
 import _root_.org.cloudfun.entity.Entity
-import _root_.org.cloudfun.storage.Ref
 import _root_.org.cloudfun.util.LogMethods
+import org.cloudfun.storage.{Storage, Ref}
 
 /**
  * Handles clients connected to the server
  */
 
-class ClientConnectionHandler extends IoHandlerAdapter with LogMethods {
+class ClientConnectionHandler(storage: Storage) extends IoHandlerAdapter with LogMethods {
 
   override def sessionOpened(session: IoSession) = {
     // Create session handler for client, or connect the client to some entity directly?
@@ -23,7 +23,7 @@ class ClientConnectionHandler extends IoHandlerAdapter with LogMethods {
     message match {
       case d: Data =>
         // Find the account / avatar to handle the message
-        val accountEntity = session.getAttribute("ACCOUNT").asInstanceOf[Ref[Entity]]()
+        val accountEntity: Entity = storage.get(session.getAttribute("ACCOUNT").asInstanceOf[Ref[Entity]])
 
         // Send / schedule message
         // TODO

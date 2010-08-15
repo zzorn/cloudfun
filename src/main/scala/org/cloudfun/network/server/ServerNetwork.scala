@@ -9,11 +9,12 @@ import _root_.org.cloudfun.authentication.Authenticator
 import _root_.org.cloudfun.{ConfigOption}
 import protocol.binary.BinaryProtocol
 import server.AuthenticationFilter
+import org.cloudfun.storage.Storage
 
 /**
  * Listens to incoming client connections and attaches them to their accounts/avatars, or creates new ones if they are new.
  */
-class ServerNetwork(authenticator: Authenticator) extends Network {
+class ServerNetwork(authenticator: Authenticator, storage: Storage) extends Network {
 
   val idleTime = conf[Int]("it", "idle-time", 60*20, "Seconds before an idle client is disconnected.")
   val logMessages = conf[Boolean]("lm", "log-messages", false, "Wether to log all network messages.  Only recommended for debugging purposes.")
@@ -33,7 +34,7 @@ class ServerNetwork(authenticator: Authenticator) extends Network {
     if (logMessages()) acceptor.getFilterChain().addLast( "logger", new LoggingFilter() )
     acceptor.getFilterChain().addLast( "authenticator", new AuthenticationFilter(authenticator))
 
-    acceptor.setHandler( new ClientConnectionHandler() )
+    acceptor.setHandler( new ClientConnectionHandler(storage) )
     acceptor.getSessionConfig().setIdleTime(IdleStatus.READER_IDLE, idleTime())
 //  acceptor.setReuseAddress(true)  // TODO: Should we use this?  What does it do?
 

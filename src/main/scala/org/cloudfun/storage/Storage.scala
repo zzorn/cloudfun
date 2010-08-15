@@ -6,7 +6,6 @@ import _root_.org.cloudfun.data.Data
 /**
  * A service for storing objects persistently and retrieving them.
  */
-// TODO: Add name bindings, they are necessary
 trait Storage extends CloudFunService {
 
   private var serializers: List[Serializer] = Nil
@@ -15,6 +14,12 @@ trait Storage extends CloudFunService {
    * Saves or updates the object if it has changed.
    */
   def store(obj: Storable)
+
+  /**
+   * Sets the binding for the specified name to the specified object.
+   * Saves or updates the object.
+   */
+  def bind(name: Symbol, ref: Ref[Storable])
 
   /**
    * Returns the reference to the specified object.  If it isn't already stored, stores the object.
@@ -27,6 +32,11 @@ trait Storage extends CloudFunService {
   def get[T <: Storable](ref: Ref[T]): T
 
   /**
+   * Returns the object for the specified name, or throws an exception if it was not found.
+   */
+  def get[T <: Storable](name: Symbol): T
+
+  /**
    * Deletes the referenced object if it exists.
    */
   def delete[T <: Storable](ref: Ref[T])
@@ -35,6 +45,11 @@ trait Storage extends CloudFunService {
    * Deletes the specified object if it is stored.
    */
   def delete(obj: Storable)
+
+  /**
+   * Deletes the specified name binding if found.
+   */
+  def delete(name: Symbol)
 
   /**
    * Specify a serializer that can convert some type of objects to a serializable friendly Data format.

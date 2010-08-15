@@ -4,7 +4,7 @@ package org.cloudfun.storage.mongodb
 import _root_.com.mongodb._
 import _root_.com.osinka.mongodb.{Serializer, DBObjectCollection, MongoCollection}
 import _root_.org.bson.types.ObjectId
-import _root_.org.cloudfun.storage.{Ref, Storable, Storage}
+import org.cloudfun.storage.{ElementNotFoundException, Ref, Storable, Storage}
 
 /**
  * 
@@ -41,6 +41,7 @@ class MongoDbStorage() extends Storage {
   private var mongo: Mongo = null
   private var database: DB = null
   private var entityCollection: StorableCollection = null
+  private var bindings: DBCollection = null
 
   override protected def onInit() {
     val masterAddress = new ServerAddress(masterStorage(), masterPort())
@@ -51,6 +52,8 @@ class MongoDbStorage() extends Storage {
 
     database = mongo.getDB(databaseName())
     entityCollection = new StorableCollection(database)
+    val bindings   = database.getCollection("bindings")
+
 
   /*
     entityCollection.createIndex({
@@ -75,7 +78,7 @@ class MongoDbStorage() extends Storage {
   }
 
   def get[T <: Storable](ref: Ref[T]): T = {
-    entityCollection(ref.asInstanceOf[MongoRef[T]].id).asInstanceOf[T]
+    entityCollection(getRefId(ref)).asInstanceOf[T]
   }
 
   def getReference[T <: Storable](obj: T): Ref[T] = {
@@ -87,6 +90,37 @@ class MongoDbStorage() extends Storage {
     }
 
     return MongoRef[T](id)
+  }
+
+
+  def delete(name: Symbol) {
+    bindings.remove(new BasicDBObject("name", name.name))
+  }
+
+  def get[T <: Storable](name: Symbol): T = {
+    val doc = new BasicDBObject("name", name.name)
+    val result = bindings.findOne(doc)
+    if (result == null) throw new ElementNotFoundException("Nothing bound to " + name + "'")
+    else {
+      val ref: ObjectId = result.get("ref").asInstanceOf[ObjectId]
+      val obj: T = entityCollection(ref).asInstanceOf[T]
+      if (obj == null) throw new ElementNotFoundException(name + "' bound to nothing")
+      else obj
+    }
+  }
+
+  def bind(name: Symbol, ref: Ref[Storable]) {
+    val id = getRefId(ref)
+
+    val doc = new BasicDBObject("name", name.name)
+    bindings.remove(doc) // Remove previous binding with the name if found
+
+    doc.put("ref", id)
+    bindings.insert(doc) // Add binding with name and id
+  }
+
+  private def getRefId[T <: Storable](ref: Ref[T]): ObjectId = {
+    ref.asInstanceOf[MongoRef[T]].id
   }
 
 }
