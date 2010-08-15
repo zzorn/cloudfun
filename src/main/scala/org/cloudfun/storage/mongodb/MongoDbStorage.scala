@@ -2,7 +2,7 @@ package org.cloudfun.storage.mongodb
 
 
 import _root_.com.mongodb._
-import _root_.com.osinka.mongodb.{Serializer, DBObjectCollection, MongoCollection}
+import _root_.com.osinka.mongodb.{MongoCollection}
 import _root_.org.bson.types.ObjectId
 import org.cloudfun.storage.{ElementNotFoundException, Ref, Storable, Storage}
 
@@ -20,22 +20,7 @@ class MongoDbStorage() extends Storage {
 
   class StorableCollection(database: DB) extends MongoCollection[Storable] {
     val underlying = database.getCollection("entities")
-
-    def serializer = new Serializer[Storable] {
-
-      def in(obj: Storable): DBObject = {
-        throw new UnsupportedOperationException("Not implemented yet") // TODO
-/*
-        val dbo = new DBObject()
-        obj.keys
-*/
-      }
-
-      def out(dbo: DBObject): scala.Option[Storable] = {
-        throw new UnsupportedOperationException("Not implemented yet") // TODO
-      }
-
-    }
+    def serializer = MongoSerializer
   }
 
   private var mongo: Mongo = null
@@ -82,11 +67,13 @@ class MongoDbStorage() extends Storage {
   }
 
   def getReference[T <: Storable](obj: T): Ref[T] = {
-    var id: ObjectId = obj.get('_id).asInstanceOf[ObjectId]
-    if (id == null) {
-      id = new ObjectId()
-      obj.set('_id, id)
-      store(obj)
+    val id: ObjectId = obj.get('_id) match  {
+      case Some(id) => id.asInstanceOf[ObjectId]
+      case None =>
+        val id = new ObjectId()
+        obj.set('_id, id)
+        store(obj)
+        id
     }
 
     return MongoRef[T](id)
