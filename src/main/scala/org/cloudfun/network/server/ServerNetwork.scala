@@ -10,13 +10,17 @@ import _root_.org.cloudfun.{ConfigOption}
 import protocol.binary.BinaryProtocol
 import server.AuthenticationFilter
 import org.cloudfun.storage.Storage
+import java.net.InetSocketAddress
 
 /**
  * Listens to incoming client connections and attaches them to their accounts/avatars, or creates new ones if they are new.
  */
 class ServerNetwork(authenticator: Authenticator, storage: Storage) extends Network {
 
+  val DEFAULT_PORT = 6283
+
   val idleTime = conf[Int]("it", "idle-time", 60*20, "Seconds before an idle client is disconnected.")
+  val port = conf[Int]("p", "port", DEFAULT_PORT, "Port to use for the server.")
   val logMessages = conf[Boolean]("lm", "log-messages", false, "Wether to log all network messages.  Only recommended for debugging purposes.")
 
   private var acceptor: NioSocketAcceptor = null
@@ -40,8 +44,8 @@ class ServerNetwork(authenticator: Authenticator, storage: Storage) extends Netw
 
   }
 
-  override protected def onStart() = acceptor.bind
-  override protected def onStop() = acceptor.unbind
+  override protected def onStart() = acceptor.bind(new InetSocketAddress(port()))
+  override protected def onStop() = acceptor.unbind(new InetSocketAddress(port()))
 
 }
 

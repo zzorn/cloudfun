@@ -210,7 +210,6 @@ class BinarySerializer {
       }
     })
 
-    // TODO: How to serialize and instantiate Data?
     add( new TypeSerializer[Data]( classOf[Data] ) {
       def enc(buffer: IoBuffer, value: T) {
         val entries = value.toMap
@@ -231,7 +230,7 @@ class BinarySerializer {
           numEntries -= 1
         }
 
-        new MutableData( resultMap )
+        new MutableData(resultMap)
       }
     })
 

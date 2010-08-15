@@ -10,9 +10,7 @@ trait ServerHandler extends MessageReceiver {
 
   def onConnectionFailed(reason: String, cause: Exception)
 
-  def onConnected(serverData: Data)
+  def onConnected()
 
   def onDiconnected(reason: String, cause: Exception)
-
-  def disconnect()
 }

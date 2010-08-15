@@ -7,8 +7,7 @@ import org.cloudfun.storage.Storage
 /**
  * 
  */
-
 object ChatServer extends GameServer(new ChatGame()) {
-  override val storage = new InMemoryStorage()
+  override def createStorage = new InMemoryStorage()
   
 }

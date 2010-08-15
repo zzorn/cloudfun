@@ -26,12 +26,20 @@ object GameServerApp extends GameServer()
  */
 // TODO: Use Guice or something for inversion of control service composition?   Is it needed?
 class GameServer(game: Game = null) extends CloudFun {
-  val clock: Clock = service(RealClock)
-  val storage: Storage = service(new MongoDbStorage())
-  val scheduler: Scheduler = service(new PooledScheduler(clock, storage))
-  val network: Network = service(new ServerNetwork(authenticator, storage))
-  val gameService: GameService = service(new DefaultGameService(this, game))
-  val authenticator: Authenticator = service(new DummyTestAuthenticator(storage, gameService))
+
+  def createClock: Clock = RealClock
+  def createStorage: Storage = new MongoDbStorage()
+  def createScheduler(clock: Clock, storage: Storage): Scheduler = new PooledScheduler(clock, storage)
+  def createGameService(gameServer: GameServer, g: Game): GameService = new DefaultGameService(gameServer, g)
+  def createAuthenticator(storage: Storage, gameService: GameService): Authenticator = new DummyTestAuthenticator(storage, gameService)
+  def createServerNetwork(authenticator: Authenticator, storage: Storage): ServerNetwork = new ServerNetwork(authenticator, storage)
+
+  final val clock: Clock = service(createClock)
+  final val storage: Storage = service(createStorage)
+  final val scheduler: Scheduler = service(createScheduler(clock, storage))
+  final val gameService: GameService = service(createGameService(this, game))
+  final val authenticator: Authenticator = service(createAuthenticator(storage, gameService))
+  final val network: Network = service(createServerNetwork(authenticator, storage))
 
 }
 

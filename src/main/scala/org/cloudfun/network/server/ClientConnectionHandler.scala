@@ -26,7 +26,7 @@ class ClientConnectionHandler(storage: Storage) extends IoHandlerAdapter with Lo
         val accountEntity: Entity = storage.get(session.getAttribute("ACCOUNT").asInstanceOf[Ref[Entity]])
 
         // Send / schedule message
-        // TODO
+        accountEntity.onMessage(d)
 
       case null => logError("Null message")
       case _ => logError("Unknown message type: " + message.asInstanceOf[Object].getClass)

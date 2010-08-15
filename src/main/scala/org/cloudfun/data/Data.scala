@@ -65,6 +65,18 @@ trait Data {
   def getData(name: Symbol, default: Data = EmptyData) = getAs[Data](name).getOrElse(default)
 
 
+  override def toString: String = {
+    val sb = new StringBuilder()
+    sb.append("{\n")
+    properties foreach (p => {
+      sb.append(p)
+      sb.append(": ")
+      sb.append(apply(p).toString())
+      sb.append("\n")
+    })
+    sb.append("}\n")
+    sb.toString
+  }
 }
 
 

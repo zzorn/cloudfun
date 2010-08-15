@@ -4,6 +4,7 @@ import _root_.org.cloudfun.data.{MutableData, Data}
 import org.cloudfun.storage.{Ref, Storable}
 import org.cloudfun.util.ListenableList
 import org.cloudfun.CloudFun
+import org.cloudfun.messaging.MessageReceiver
 
 object Entity {
 
@@ -43,7 +44,7 @@ object Entity {
 /**
  *  A persistent object consisting of different parts (facets).
  */
-class Entity extends MutableData with Storable {
+class Entity extends MutableData with Storable with MessageReceiver {
 
   // TODO
 //  val facets = list[Ref[Facet]]('facets)
@@ -70,6 +71,8 @@ class Entity extends MutableData with Storable {
   def facet[T <: Facet](implicit m: Manifest[T]): Option[T] = facets().map(_.get).find(f => m.erasure.isInstance(f)).asInstanceOf[Option[T]]
 */
 
+  def onMessage(message: Data) = {}
+
   /**
    * Removes the entity and its facets from persistent storage.
    */
@@ -89,23 +92,6 @@ class Entity extends MutableData with Storable {
   }
 */
 
-  /**
-   * Replaces this entity with the specified new entities, at the same location.
-   */
-  def replaceWith(entities: Entity *) {
-/* TODO: This is special case code...
-    facet[Item] match {
-      case Some(item) => {
-        // Spawn replacements:
-        entities foreach {item.space.add(_, item.position)}
-      }
-      case None => // This entity isn't in a space, so dont put the replacement in a space
-    }
-
-    // Remove self
-    delete()
-*/
-  }
 
 }
 
