@@ -30,7 +30,7 @@ object MongoSerializer extends Serializer[Storable] {
       val data: Data = objToData(dbo.get("data").asInstanceOf[DBObject])
       if (data == null) throw new IllegalStateException("Can not unserialize object, it has no data field.")
 
-      // TODO: Check that the kind is amond allowed types
+      // TODO: Check that the kind is among allowed types
       // Create instance
       val obj: Storable = Class.forName(kind).asInstanceOf[Storable]
 
