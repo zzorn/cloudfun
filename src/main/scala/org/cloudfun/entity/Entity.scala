@@ -1,10 +1,10 @@
 package org.cloudfun.entity
 
 import _root_.org.cloudfun.data.{MutableData, Data}
-import org.cloudfun.storage.{Ref, Storable}
 import org.cloudfun.util.ListenableList
 import org.cloudfun.CloudFun
 import org.cloudfun.messaging.MessageReceiver
+import org.cloudfun.storage.{Storage, NoRef, Ref, Storable}
 
 object Entity {
 
@@ -46,51 +46,47 @@ object Entity {
  */
 class Entity extends MutableData with Storable with MessageReceiver {
 
-  // TODO
-//  val facets = list[Ref[Facet]]('facets)
+  val facets = list[Ref[Facet]]('facets)
   
-/*
   def addFacet(facet: Facet) {
     val r = facet.ref
-    if (!facets.contains(r)) {
-      facets += r
-      throw new UnsupportedOperationException("Not implemented yet") // TODO
-      //facet.entity := this.ref[Entity]
+    if (!facets().contains(r)) {
+      facets.set(r :: facets())
+      facet.entity := ref[Entity]
     }
   }
 
   def removeFacet(facet: Facet) {
     val r = facet.ref
-    if (facets.contains(r)) {
-      facets -= r
-      throw new UnsupportedOperationException("Not implemented yet") // TODO
-      //facet.entity := null
+    if (facets().contains(r)) {
+      facets.set(facets().filterNot(_ == r))
+      facet.entity := NoRef
     }
   }
 
-  def facet[T <: Facet](implicit m: Manifest[T]): Option[T] = facets().map(_.get).find(f => m.erasure.isInstance(f)).asInstanceOf[Option[T]]
-*/
+  /**
+   * Get a facet of the specific type, or None if not found.
+   */
+  def facet[T <: Facet](implicit m: Manifest[T], storage: Storage): Option[T] = facets().map(_.apply(storage)).find(f => m.erasure.isInstance(f)).asInstanceOf[Option[T]]
 
-  def onMessage(message: Data) = {}
+  def onMessage(message: Data) = {
+    // TODO: Send message to correct facet?
+  }
 
   /**
    * Removes the entity and its facets from persistent storage.
    */
   override final def delete() {
-/*
     // Delete facets
     facets().foreach {f: Ref[Facet] => f().delete() }
-*/
 
     // Delete self
     super.delete()
   }
 
-/*
   override def toString(): String = {
-    "Entity " + hashCode + "¸ facets: " + facets().map(_.get()).mkString("[", ", ", "]")
+    "Entity " + hashCode + "¸ facets: " + facets().map(_.apply()).mkString("[", ", ", "]")
   }
-*/
 
 
 }

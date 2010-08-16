@@ -1,5 +1,7 @@
 package org.cloudfun.data
 
+import org.cloudfun.storage.{NoRef, Ref}
+
 /**
  * Collection of key-value properties.
  */
@@ -11,7 +13,8 @@ trait Data {
   case class Field[T](name: Symbol) {
     def apply(): T = self.getAs[T](name).get
     def get(): Option[T]   = self.getAs[T](name)
-    def := (v: T) = self.set(name, v.asInstanceOf[Object])
+    def set(v: T) = self.set(name, v.asInstanceOf[Object])
+    def := (v: T) = set(v)
   }
 
   protected def field[T](name: Symbol, value: T = null) = makeField[T](name, value)
@@ -23,8 +26,9 @@ trait Data {
   protected def string(name: Symbol, value: String = "") = makeField[String](name, value)
   protected def data(name: Symbol, value: Data = null) = makeField[Data](name, value)
   protected def list[E](name: Symbol, value: List[E] = Nil) = makeField[List[E]](name, value)
+  protected def ref[E](name: Symbol, value: Ref[E] = NoRef) = makeField[Ref[E]](name, value)
 
-  private def makeField[T](name: Symbol, value: T) {
+  private def makeField[T](name: Symbol, value: T): Field[T] = {
     set(name, value.asInstanceOf[Object])
     Field[T](name)
   }
@@ -60,8 +64,9 @@ trait Data {
   def getFloat(name: Symbol, default: Float = 0) = getAs[Number](name).map(n => n.floatValue).getOrElse(default)
   def getDouble(name: Symbol, default: Double = 0) = getAs[Number](name).map(n => n.doubleValue).getOrElse(default)
   def getBoolean(name: Symbol, default: Boolean) = getAs[Boolean](name).getOrElse(default)
-  def getString(name: Symbol, default: String) = getAs[String](name).getOrElse(default)
+  def getString(name: Symbol, default: String = "") = getAs[String](name).getOrElse(default)
   def getList(name: Symbol, default: List[Object] = Nil) = getAs[List[Object]](name).getOrElse(default)
+  def getRef[E](name: Symbol, default: Ref[E] = NoRef) = getAs[Ref[E]](name).getOrElse(default)
   def getData(name: Symbol, default: Data = EmptyData) = getAs[Data](name).getOrElse(default)
 
 

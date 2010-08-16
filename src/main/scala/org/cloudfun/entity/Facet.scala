@@ -2,7 +2,7 @@ package org.cloudfun.entity
 
 import _root_.org.cloudfun.messaging.MessageReceiver
 import org.cloudfun.scheduler.Taskable
-import org.cloudfun.storage.{Ref, Storable}
+import org.cloudfun.storage.{Storable}
 import org.cloudfun.scheduler.Taskable
 import org.cloudfun.data.{MutableData, Data}
 
@@ -11,21 +11,12 @@ import org.cloudfun.data.{MutableData, Data}
  */
 trait Facet extends MutableData with Storable with Taskable with MessageReceiver {
 
-/*
   /**
    * The entity that this facet is a part of.
    */
-  val entity = link[Entity]('entity).addListener(onEntityChanged)
-*/
+  val entity = ref[Entity]('entity)
 
   protected[entity] final def initialize(parameters: Data) {init(parameters)}
-
-  /**
-   * Called when after the Facet has been created.
-   */
-  protected def init(parameters: Data) {}
-
-
 
   override final def delete() {
     super.delete()
@@ -34,14 +25,14 @@ trait Facet extends MutableData with Storable with Taskable with MessageReceiver
   }
 
   /**
+   * Called when after the Facet has been created.
+   */
+  protected def init(parameters: Data) {}
+
+  /**
    * Called when the facet was deleted.
    */
   protected def onDeleted() {}
-
-  /**
-   *  Called when the entity that this facet is in has changed.
-   */
-  protected def onEntityChanged(oldEntity: Ref[Entity], newEntity: Ref[Entity]) {}
 
   override def toString: String = {
     getClass.getSimpleName + " facet " + hashCode

@@ -5,6 +5,7 @@ import org.cloudfun.storage.Storable
 import com.mongodb.{BasicDBList, BasicDBObject, DBObject}
 import org.cloudfun.data.{MutableData, Data}
 import scala.collection.JavaConversions._
+import org.bson.types.ObjectId
 
 
 /**
@@ -45,6 +46,7 @@ object MongoSerializer extends Serializer[Storable] {
     val doc = new BasicDBObject()
     data.toMap.elements foreach ( (e: (Symbol, Object)) => {
       var value = e._2
+      if (value.isInstanceOf[MongoRef[_]]) value = value.asInstanceOf[MongoRef[_]].id
       if (value.isInstanceOf[Data]) value = dataToObj(value.asInstanceOf[Data])
       if (value.isInstanceOf[List[_]]) value = listToObj(value.asInstanceOf[List[_]])
       if (value.isInstanceOf[Set[_]]) value = setToObj(value.asInstanceOf[Set[_]])
@@ -72,6 +74,7 @@ object MongoSerializer extends Serializer[Storable] {
       var value = e._2
       if (value.isInstanceOf[BasicDBList]) value = objToList(value.asInstanceOf[BasicDBList])
       if (value.isInstanceOf[DBObject]) value = objToData(value.asInstanceOf[DBObject])
+      if (value.isInstanceOf[ObjectId]) value = MongoRef[Storable](value.asInstanceOf[ObjectId])
 
       data.set(Symbol(e._1.toString), value.asInstanceOf[Object])
     })

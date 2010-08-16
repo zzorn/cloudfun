@@ -4,7 +4,7 @@ package org.cloudfun.storage.mongodb
 import _root_.com.mongodb._
 import _root_.com.osinka.mongodb.{MongoCollection}
 import _root_.org.bson.types.ObjectId
-import org.cloudfun.storage.{ElementNotFoundException, Ref, Storable, Storage}
+import org.cloudfun.storage._
 
 /**
  * 
@@ -107,7 +107,11 @@ class MongoDbStorage() extends Storage {
   }
 
   private def getRefId[T <: Storable](ref: Ref[T]): ObjectId = {
-    ref.asInstanceOf[MongoRef[T]].id
+    ref match {
+      case NoRef => throw new ElementNotFoundException("Reference to nothing")
+      case MongoRef(id) => id
+      case _ => throw new ElementNotFoundException("Unknown reference type "+ ref)
+    }
   }
 
 }
