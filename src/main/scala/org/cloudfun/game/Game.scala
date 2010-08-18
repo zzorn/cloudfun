@@ -2,7 +2,7 @@ package org.cloudfun.game
 
 import _root_.org.cloudfun.entity.Entity
 import _root_.org.cloudfun.util.StringUtils
-import org.cloudfun.{GameServer, CloudFun}
+import org.cloudfun.{GameServer, CloudFunApplication}
 
 /**
  * A factory that creates the initial state in the game and sets up any recurring simulation or other effects,

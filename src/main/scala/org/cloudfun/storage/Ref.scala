@@ -1,7 +1,7 @@
 package org.cloudfun.storage
 
 import _root_.java.io.Serializable
-import _root_.org.cloudfun.CloudFun
+import org.cloudfun.{CloudFun, CloudFunApplication}
 
 /**
  * A reference to a storable object.
@@ -14,7 +14,7 @@ trait Ref[T <: Storable] extends Serializable {
    * Returns the referenced object.
    * Takes the storage to use as an implicit parameter.
    */
-  final def apply(implicit storage: Storage): T = storage.get(this)
+  final def apply(): T = CloudFun.storage.get(this)
 
 }
 

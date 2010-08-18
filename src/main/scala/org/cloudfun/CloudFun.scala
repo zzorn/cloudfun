@@ -1,25 +1,22 @@
 package org.cloudfun
 
-import authentication.Authenticator
-import game.GameService
 import network.Network
-import time.Clock
 import scheduler.Scheduler
 import storage.Storage
+import time.Clock
 
 /**
- * A game service, containing the different services making up the game framework.
+ * Singleton used to access the storage and other services.
  */
-trait CloudFun extends CloudFunService {
-/*
-  def clock: Clock
-  def storage: Storage
-  def scheduler: Scheduler
-  def network: Network
-  */
-//  def gameService: GameService
-//  def authenticator: Authenticator
-  
-}
+object CloudFun {
 
+  var application: CloudFunApplication = null
+
+  def clock: Clock = application.clock
+  def storage: Storage = application.storage
+  def scheduler: Scheduler = application.scheduler
+  def network: Network = application.network
+
+
+}
 

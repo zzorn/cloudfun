@@ -1,12 +1,12 @@
 package org.cloudfun.time
 
-import _root_.org.cloudfun.CloudFunService
+import _root_.org.cloudfun.Service
 import scala.math._
 
 /**
  * Provides current game time.
  */
-trait Clock extends CloudFunService {
+trait Clock extends Service {
   
   def currentGameTime: Time
 

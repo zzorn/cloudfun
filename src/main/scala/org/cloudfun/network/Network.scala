@@ -1,11 +1,11 @@
 package org.cloudfun.network
 
-import _root_.org.cloudfun.CloudFunService
+import _root_.org.cloudfun.Service
 
 /**
  * Network service.
  */
-trait Network extends CloudFunService {
+trait Network extends Service {
 
 
   // TODO: Send message function?  Takes as parameter the sending entity, so that it can look up the session?

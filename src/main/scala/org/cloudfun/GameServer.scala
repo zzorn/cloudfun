@@ -25,7 +25,7 @@ object GameServerApp extends GameServer()
  * CloudFun server, can be invoked programmatically.
  */
 // TODO: Use Guice or something for inversion of control service composition?   Is it needed?
-class GameServer(game: Game = null) extends CloudFun {
+class GameServer(game: Game = null) extends CloudFunApplication {
 
   def createClock: Clock = RealClock
   def createStorage: Storage = new MongoDbStorage()

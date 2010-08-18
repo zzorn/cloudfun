@@ -1,54 +1,27 @@
 package org.cloudfun.entity
 
 import _root_.org.cloudfun.data.{MutableData, Data}
-import org.cloudfun.util.ListenableList
-import org.cloudfun.CloudFun
 import org.cloudfun.messaging.MessageReceiver
-import org.cloudfun.storage.{Storage, NoRef, Ref, Storable}
-
-object Entity {
-
-  def create(entityDefinition: Data): Entity = {
-    val entity: Entity = new Entity()
-
-    // Create facets
-    def createFacet(entry: (Symbol, Data)): Option[Facet] = //CloudFun.facetService.createFacet(entry._1, entry._2)
-      throw new UnsupportedOperationException("Not implemented yet") // TODO
-/* TODO
-    Entity((entityDefinition.evaluate().asInstanceOf[Data].values map createFacet).flatten)
-*/
-    null
-  }
-
-  def apply(facets: Facet*): Entity = Entity(facets.toList)
-
-  def apply(facets: Iterable[Facet]): Entity = {
-    val entity: Entity = new Entity()
-
-    throw new UnsupportedOperationException("Not implemented yet") // TODO
-/*
-    // Set facets
-    facets foreach {(f:Facet) => entity.addFacet(f)}
-*/
-
-    // Store entity
-    throw new UnsupportedOperationException("Not implemented yet") // TODO
-    //CloudFun.storage.store(entity)
-
-    entity
-  }
-
-}
+import org.cloudfun.storage.{NoRef, Ref, Storable}
+import org.cloudfun.util.LogMethods
 
 
 /**
  *  A persistent object consisting of different parts (facets).
  */
-class Entity extends MutableData with Storable with MessageReceiver {
+class Entity extends MutableData with Storable with MessageReceiver with LogMethods {
+
+  def this(facets: Facet*) = this(facets.toList)
+
+  def this(facets: Iterable[Facet]) = {
+    this()
+
+    facets foreach addFacet
+  }
 
   val facets = list[Ref[Facet]]('facets)
   
-  def addFacet(facet: Facet) {
+  final def addFacet(facet: Facet) {
     val r = facet.ref
     if (!facets().contains(r)) {
       facets.set(r :: facets())
@@ -56,7 +29,7 @@ class Entity extends MutableData with Storable with MessageReceiver {
     }
   }
 
-  def removeFacet(facet: Facet) {
+  final def removeFacet(facet: Facet) {
     val r = facet.ref
     if (facets().contains(r)) {
       facets.set(facets().filterNot(_ == r))
@@ -67,10 +40,26 @@ class Entity extends MutableData with Storable with MessageReceiver {
   /**
    * Get a facet of the specific type, or None if not found.
    */
-  def facet[T <: Facet](implicit m: Manifest[T], storage: Storage): Option[T] = facets().map(_.apply(storage)).find(f => m.erasure.isInstance(f)).asInstanceOf[Option[T]]
+  def facet[T <: Facet](implicit m: Manifest[T]): Option[T] = facets().map(_.apply()).find(f => m.erasure.isInstance(f)).asInstanceOf[Option[T]]
 
-  def onMessage(message: Data) = {
-    // TODO: Send message to correct facet?
+  /**
+   * Get a facet with the specified name, or None if not found.
+   */
+  // TODO: Store the facets in a map instead, for faster access?
+  def facet[T <: Facet](name: Symbol): Option[T] = facets().map(_.apply()).find(f => f.name == name).asInstanceOf[Option[T]]
+
+  final def onMessage(message: Data) = {
+    message.get('facet) match {
+      case None => fallbackMessageHandler(message)
+      case Some(name) => facet(name) match {
+        case None => fallbackMessageHandler(message)
+        case Some(facet: Facet) => facet.onMessage(message)
+      }
+    }
+  }
+
+  def fallbackMessageHandler(message: Data) {
+    logWarning("Message not handled: " + message)
   }
 
   /**

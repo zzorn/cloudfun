@@ -7,8 +7,7 @@ import _root_.java.lang.String
 import _root_.java.util.{HashMap, Map}
 import _root_.org.bson.BSONObject
 import _root_.org.cloudfun.data.{MutableData, Data}
-import org.cloudfun.CloudFun
-
+import org.cloudfun.{CloudFun, CloudFunApplication}
 
 /**
  * Persistent object.
@@ -20,8 +19,7 @@ trait Storable extends Data {
   def store() = storage.store(this)
   def delete() = storage.delete(this)
 
-  protected def storage: Storage = //CloudFun.storage
-    throw new UnsupportedOperationException("Not implemented yet") // TODO
+  protected def storage: Storage = CloudFun.application.storage
 
 /*
   // TODO: mark non-serializable

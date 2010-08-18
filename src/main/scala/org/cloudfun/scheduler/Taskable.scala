@@ -2,7 +2,7 @@ package org.cloudfun.scheduler
 
 import org.cloudfun.time.Time
 import org.cloudfun.data.Data
-import org.cloudfun.CloudFun
+import org.cloudfun.CloudFunApplication
 
 /**
  * 

@@ -1,6 +1,6 @@
 package org.cloudfun.authentication
 
-import _root_.org.cloudfun.CloudFunService
+import _root_.org.cloudfun.Service
 import _root_.org.cloudfun.entity.Entity
 import _root_.org.cloudfun.storage.Ref
 
@@ -16,7 +16,7 @@ case object AccountCreationDenied extends AccountCreationError('AccountCreationD
 /**
  * Takes care of authenticating a login and creating new accounts, and returning the reference to the users in-game entity.
  */
-trait Authenticator extends CloudFunService {
+trait Authenticator extends Service {
 
   def authenticate(accountName: String, pw: Array[Char]): Option[Ref[Entity]]
   def createAccount(accountName: String, pw: Array[Char]): AccountCreationResponse

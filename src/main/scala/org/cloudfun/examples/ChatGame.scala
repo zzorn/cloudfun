@@ -3,7 +3,7 @@ package org.cloudfun.examples
 import _root_.java.lang.String
 import _root_.org.cloudfun.entity.Entity
 import _root_.org.cloudfun.game.Game
-import org.cloudfun.{GameServer, CloudFun}
+import org.cloudfun.{GameServer, CloudFunApplication}
 import org.cloudfun.data.Data
 
 /**

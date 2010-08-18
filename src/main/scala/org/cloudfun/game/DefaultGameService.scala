@@ -2,7 +2,7 @@ package org.cloudfun.game
 
 import _root_.java.lang.String
 import _root_.org.cloudfun.entity.Entity
-import org.cloudfun.{GameServer, InitializationError, CloudFun}
+import org.cloudfun.{GameServer, InitializationError, CloudFunApplication}
 
 /**
  * Default GameService implementation that delegates the actual game initialization and new user initialization

@@ -8,14 +8,14 @@ import util.{StringUtils, OneLineLogFormatter, LogMethods}
  * Trait for central CloudFun services.
  */
 // TODO: Move to utils?
-trait CloudFunService extends LogMethods {
+trait Service extends LogMethods {
 
   private var running = false
-  private var services: List[CloudFunService] = Nil
+  private var services: List[Service] = Nil
 
   final var configOptions: List[ConfigOption[_]] = Nil
 
-  protected def service[T <: CloudFunService](service: T): T = {
+  protected def service[T <: Service](service: T): T = {
     addSubService(service)
     service
   }
@@ -125,9 +125,9 @@ trait CloudFunService extends LogMethods {
   protected def onStop() {}
 
   /** Any services contained in this service, that should be started and stopped when this service is started and stopped. */
-  final def subServices: List[CloudFunService] = services
+  final def subServices: List[Service] = services
 
-  final def addSubService(service: CloudFunService) {
+  final def addSubService(service: Service) {
     if (isRunning) throw new IllegalStateException("Should not add a service while the engine is running")
 
     services = service :: services

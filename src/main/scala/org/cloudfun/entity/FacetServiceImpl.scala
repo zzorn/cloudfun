@@ -2,7 +2,7 @@ package org.cloudfun.entity
 
 import _root_.org.cloudfun.storage.Storage
 import org.cloudfun.data.Data
-import org.cloudfun.CloudFun
+import org.cloudfun.CloudFunApplication
 
 class FacetServiceImpl(storage: Storage) extends FacetService {
 
