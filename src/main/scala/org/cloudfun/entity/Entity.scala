@@ -11,18 +11,18 @@ import org.cloudfun.util.LogMethods
  */
 class Entity extends MutableData with Storable with MessageReceiver with LogMethods {
 
-  def this(facets: Facet*) = this(facets.toList)
-
   def this(facets: Iterable[Facet]) = {
     this()
 
     facets foreach addFacet
   }
 
+  def this(facets: Facet*) = this(facets.toList)
+
   val facets = list[Ref[Facet]]('facets)
   
   final def addFacet(facet: Facet) {
-    val r = facet.ref
+    val r = facet.ref[Facet]
     if (!facets().contains(r)) {
       facets.set(r :: facets())
       facet.entity := ref[Entity]
@@ -33,14 +33,14 @@ class Entity extends MutableData with Storable with MessageReceiver with LogMeth
     val r = facet.ref
     if (facets().contains(r)) {
       facets.set(facets().filterNot(_ == r))
-      facet.entity := NoRef
+      facet.entity := NoRef[Facet]()
     }
   }
 
   /**
    * Get a facet of the specific type, or None if not found.
    */
-  def facet[T <: Facet](implicit m: Manifest[T]): Option[T] = facets().map(_.apply()).find(f => m.erasure.isInstance(f)).asInstanceOf[Option[T]]
+//  def facet[T <: Facet](implicit m: Manifest[T]): Option[T] = facets().map(_.apply()).find(f => m.erasure.isInstance(f)).asInstanceOf[Option[T]]
 
   /**
    * Get a facet with the specified name, or None if not found.
@@ -51,7 +51,7 @@ class Entity extends MutableData with Storable with MessageReceiver with LogMeth
   final def onMessage(message: Data) = {
     message.get('facet) match {
       case None => fallbackMessageHandler(message)
-      case Some(name) => facet(name) match {
+      case Some(name: Symbol) => facet(name) match {
         case None => fallbackMessageHandler(message)
         case Some(facet: Facet) => facet.onMessage(message)
       }

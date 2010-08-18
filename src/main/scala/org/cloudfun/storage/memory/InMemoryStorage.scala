@@ -40,7 +40,7 @@ class InMemoryStorage extends Storage {
 
   private def getReferencedObject[T](ref: Ref[T]): T = {
     ref match  {
-      case NoRef => throw new ElementNotFoundException("Reference to nothing")
+      case NoRef() => throw new ElementNotFoundException("Reference to nothing")
       case MemoryRef(obj) => obj
       case _ => throw new IllegalStateException("Unknown reference type " + ref)
     }

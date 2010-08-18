@@ -108,7 +108,7 @@ class MongoDbStorage() extends Storage {
 
   private def getRefId[T <: Storable](ref: Ref[T]): ObjectId = {
     ref match {
-      case NoRef => throw new ElementNotFoundException("Reference to nothing")
+      case NoRef() => throw new ElementNotFoundException("Reference to nothing")
       case MongoRef(id) => id
       case _ => throw new ElementNotFoundException("Unknown reference type "+ ref)
     }
