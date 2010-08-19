@@ -19,7 +19,7 @@ class ChatGame extends Game {
 
   def createEntityForNewUser(userName: String, context: GameServer) = {
     new Entity() {
-      override def onMessage(message: Data) {
+      override def fallbackMessageHandler(message: Data) {
         println(message)
 
         // TODO: Tell message to other users

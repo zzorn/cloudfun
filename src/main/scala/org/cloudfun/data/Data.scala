@@ -1,6 +1,6 @@
 package org.cloudfun.data
 
-import org.cloudfun.storage.{NoRef, Ref}
+import org.cloudfun.storage.{Storable, NoRef, Ref}
 
 /**
  * Collection of key-value properties.
@@ -26,7 +26,7 @@ trait Data {
   protected def string(name: Symbol, value: String = "") = makeField[String](name, value)
   protected def data(name: Symbol, value: Data = null) = makeField[Data](name, value)
   protected def list[E](name: Symbol, value: List[E] = Nil) = makeField[List[E]](name, value)
-  protected def ref[E](name: Symbol, value: Ref[E] = NoRef[E]()) = makeField[Ref[E]](name, value)
+  protected def ref[E <: Storable](name: Symbol, value: Ref[E] = NoRef[E]()) = makeField[Ref[E]](name, value)
 
   private def makeField[T](name: Symbol, value: T): Field[T] = {
     set(name, value.asInstanceOf[Object])
@@ -66,7 +66,7 @@ trait Data {
   def getBoolean(name: Symbol, default: Boolean) = getAs[Boolean](name).getOrElse(default)
   def getString(name: Symbol, default: String = "") = getAs[String](name).getOrElse(default)
   def getList(name: Symbol, default: List[Object] = Nil) = getAs[List[Object]](name).getOrElse(default)
-  def getRef[E](name: Symbol, default: Ref[E] = NoRef[E]()) = getAs[Ref[E]](name).getOrElse(default)
+  def getRef[E <: Storable](name: Symbol, default: Ref[E] = NoRef[E]()) = getAs[Ref[E]](name).getOrElse(default)
   def getData(name: Symbol, default: Data = EmptyData) = getAs[Data](name).getOrElse(default)
 
 

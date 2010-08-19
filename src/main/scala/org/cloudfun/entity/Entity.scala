@@ -33,7 +33,7 @@ class Entity extends MutableData with Storable with MessageReceiver with LogMeth
     val r = facet.ref
     if (facets().contains(r)) {
       facets.set(facets().filterNot(_ == r))
-      facet.entity := NoRef[Facet]()
+      facet.entity := NoRef[Entity]()
     }
   }
 
@@ -46,12 +46,12 @@ class Entity extends MutableData with Storable with MessageReceiver with LogMeth
    * Get a facet with the specified name, or None if not found.
    */
   // TODO: Store the facets in a map instead, for faster access?
-  def facet[T <: Facet](name: Symbol): Option[T] = facets().map(_.apply()).find(f => f.name == name).asInstanceOf[Option[T]]
+  def facet[T <: Facet](name: Symbol): Option[T] = facets().map(_.apply()).find(f => f.facetType == name).asInstanceOf[Option[T]]
 
   final def onMessage(message: Data) = {
     message.get('facet) match {
       case None => fallbackMessageHandler(message)
-      case Some(name: Symbol) => facet(name) match {
+      case Some(name: Symbol) => facet[Facet](name) match {
         case None => fallbackMessageHandler(message)
         case Some(facet: Facet) => facet.onMessage(message)
       }

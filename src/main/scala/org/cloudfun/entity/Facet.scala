@@ -19,7 +19,7 @@ trait Facet extends MutableData with Storable with Taskable with MessageReceiver
   /**
    * Name for this type of facet.
    */
-  def name: Symbol = Symbol(getClass.getSimpleName())
+  def facetType: Symbol = Symbol(getClass.getSimpleName())
 
   protected[entity] final def initialize(parameters: Data) {init(parameters)}
 

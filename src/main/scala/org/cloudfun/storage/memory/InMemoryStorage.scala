@@ -38,7 +38,7 @@ class InMemoryStorage extends Storage {
     names.put(name, get(ref))
   }
 
-  private def getReferencedObject[T](ref: Ref[T]): T = {
+  private def getReferencedObject[T <: Storable](ref: Ref[T]): T = {
     ref match  {
       case NoRef() => throw new ElementNotFoundException("Reference to nothing")
       case MemoryRef(obj) => obj
