@@ -7,47 +7,49 @@ import org.cloudfun.storage.{Storable, NoRef, Ref}
  */
 trait Data {
 
-  // TODO: Can we refer to containing class somehow?
-  protected val self: Data = this
+  private var fields: Map[Symbol, Field[_]]
 
-  case class Field[T](name: Symbol) {
-    def apply(): T = self.getAs[T](name).get
-    def get(): Option[T]   = self.getAs[T](name)
-    def set(v: T) = self.set(name, v.asInstanceOf[Object])
-    def := (v: T) = set(v)
+  class Field[T](name: Symbol, initialValue: T) {
+    private var value: T = initialValue
+
+    def apply(): T = value
+    def := (v: T)  = value = v
+
+    def get: T  = value
+    def set(v: T) = value = v
   }
 
-  protected def field[T](name: Symbol, value: T = null) = makeField[T](name, value)
-  protected def bool(name: Symbol, value: Boolean = false) = makeField[Boolean](name, value)
-  protected def int(name: Symbol, value: Int = 0) = makeField[Int](name, value)
-  protected def long(name: Symbol, value: Long = 0) = makeField[Long](name, value)
-  protected def float(name: Symbol, value: Float= 0f) = makeField[Float](name, value)
-  protected def double(name: Symbol, value: Double= 0.0) = makeField[Double](name, value)
-  protected def string(name: Symbol, value: String = "") = makeField[String](name, value)
-  protected def data(name: Symbol, value: Data = null) = makeField[Data](name, value)
-  protected def list[E](name: Symbol, value: List[E] = Nil) = makeField[List[E]](name, value)
-  protected def ref[E <: Storable](name: Symbol, value: Ref[E] = NoRef[E]()) = makeField[Ref[E]](name, value)
+  protected def field[T](name: Symbol, value: T = null) = addField[T](name, value)
+  protected def bool(name: Symbol, value: Boolean = false) = addField[Boolean](name, value)
+  protected def int(name: Symbol, value: Int = 0) = addField[Int](name, value)
+  protected def long(name: Symbol, value: Long = 0) = addField[Long](name, value)
+  protected def float(name: Symbol, value: Float= 0f) = addField[Float](name, value)
+  protected def double(name: Symbol, value: Double= 0.0) = addField[Double](name, value)
+  protected def string(name: Symbol, value: String = "") = addField[String](name, value)
+  protected def data(name: Symbol, value: Data = null) = addField[Data](name, value)
+  protected def list[E](name: Symbol, value: List[E] = Nil) = addField[List[E]](name, value)
+  protected def ref[E <: Storable](name: Symbol, value: Ref[E] = NoRef[E]()) = addField[Ref[E]](name, value)
 
-  private def makeField[T](name: Symbol, value: T): Field[T] = {
-    set(name, value.asInstanceOf[Object])
-    Field[T](name)
+  private def addField[T](name: Symbol, value: T): Field[T] = {
+    val field = new Field[T](name, value)
+    fields = fields + (name -> field)
+    field
   }
 
   /** Get property if found */
-  def get(name: Symbol): Option[Object]
+  def get(name: Symbol): Option[Object] = fields.get(name) match {case None => None; case Some(field) => field.get}
 
   /** True if a property with the specified name is present. */
-  def contains(name: Symbol): Boolean
+  def contains(name: Symbol): Boolean = fields.contains(name)
 
-  def set(name: Symbol, value: Object)
-
-  def update(name: Symbol, value: Object) = set(name, value)
+  def set(name: Symbol, value: Object) = fields.get(name) match {case None => ; case Some(field) => field.set(value)}
 
   /** The available properties. */
-  def properties: Iterable[Symbol]
+  def properties: Iterable[Symbol] = fields.keys
 
   /** The data as a map. */
   def toMap: Map[Symbol, Object] = Map() ++ (properties map (x => x -> apply(x) ))
+  def fromMap(values: Map[Symbol, Object]) = values foreach (e => set(e._1, e._2)) 
 
   /** Get property, or throw error if not present */
   def apply(name: Symbol): Object = if (contains(name)) get(name).get else throw new IllegalArgumentException("Unknown data field '"+name+"'")
