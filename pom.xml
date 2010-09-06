@@ -7,6 +7,7 @@
     <projdesc>Middleware library that provides game centered storage and task execution for local, remote, or multi-node servers.</projdesc>
     <scala.version>2.8.0</scala.version>
     <scalatest.version>1.2</scalatest.version>
+    <scalaprops.version>0.1.2</scalaprops.version>
   </properties>
 
   <groupId>org.${projname}</groupId>
@@ -83,6 +84,16 @@
         <version>2.0.0-RC1</version>
     </dependency>
     
+    <!-- Properties lib -->
+    <dependency>
+      <groupId>org.scalaprops</groupId>
+      <artifactId>scalaprops</artifactId>
+      <version>${scalaprops.version}</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/lib/scalaprops-${scalaprops.version}.jar</systemPath>
+    </dependency>
+
+
   </dependencies>
 
   <build>
