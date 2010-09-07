@@ -2,19 +2,20 @@ package org.cloudfun.entity
 
 import _root_.org.cloudfun.messaging.MessageReceiver
 import org.cloudfun.scheduler.Taskable
-import org.cloudfun.storage.{Storable}
 import org.cloudfun.scheduler.Taskable
-import org.cloudfun.data.{MutableData, Data}
+import org.cloudfun.data.{ Data}
+import org.scalaprops.Bean
+import org.cloudfun.storage.{NoRef, Ref, Storable}
 
 /**
  * A part of an entity, concentrating on a specific area of functionality.
  */
-trait Facet extends MutableData with Storable with Taskable with MessageReceiver {
+trait Facet extends Data with Storable with Taskable with MessageReceiver {
 
   /**
    * The entity that this facet is a part of.
    */
-  val entity = ref[Entity]('entity)
+  val entity = refProperty[Entity]('entity)
 
   /**
    * Name for this type of facet.

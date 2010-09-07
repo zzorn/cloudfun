@@ -63,7 +63,10 @@ class MongoDbStorage() extends Storage {
   }
 
   def get[T <: Storable](ref: Ref[T]): T = {
-    entityCollection(getRefId(ref)).asInstanceOf[T]
+    entityCollection.get(getRefId(ref)) match {
+      case None => throw new IllegalStateException("No stored data object found for reference " + ref)
+      case Some(d: T) => d
+    }
   }
 
   def getReference[T <: Storable](obj: T): Ref[T] = {
@@ -71,7 +74,7 @@ class MongoDbStorage() extends Storage {
       case Some(id) => id.asInstanceOf[ObjectId]
       case None =>
         val id = new ObjectId()
-        obj.set('_id, id)
+        obj.put('_id, id)
         store(obj)
         id
     }

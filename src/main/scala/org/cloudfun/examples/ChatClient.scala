@@ -8,7 +8,7 @@ import javax.swing.text.{SimpleAttributeSet, Document}
 import java.awt.BorderLayout
 import java.awt.event.{ActionEvent, ActionListener, ComponentListener}
 import org.cloudfun.util.SimpleConsole
-import org.cloudfun.data.{MutableData, TupleData, Data}
+import org.cloudfun.data.{MutableData, Data}
 
 /**
  * 
@@ -31,15 +31,15 @@ object ChatClient extends GameClient() {
   override protected def onInit() {}
 
   override protected def onStart() {
-    console = new SimpleConsole("Chat Client", input => network.sendMessage(TupleData('message, input)) )
+    console = new SimpleConsole("Chat Client", input => network.sendMessage(new MutableData('message, input)) )
 
     console.addLine("Connecting to " + server + ":" + port)
     network.connect(server, port)
 
     val msg = new MutableData()
-    msg.set('type, 'createAccount)
-    msg.set('account, "foobar")
-    msg.set('pw, "moobar")
+    msg.addProperty('type, 'createAccount)
+    msg.addProperty('account, "foobar")
+    msg.addProperty('pw, "moobar")
     network.sendMessage(msg)
   }
 

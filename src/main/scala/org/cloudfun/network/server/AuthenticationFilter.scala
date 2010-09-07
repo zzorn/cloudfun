@@ -15,8 +15,8 @@ class AuthenticationFilter(authenticator: Authenticator) extends IoFilterAdapter
 
   private def createResponse(responseType: Symbol, desc: Symbol): Data = {
     val response = new MutableData()
-    response.set('type, responseType)
-    response.set('desc, desc)
+    response.put('type, responseType)
+    response.put('desc, desc)
     response
   }
 
@@ -33,13 +33,13 @@ class AuthenticationFilter(authenticator: Authenticator) extends IoFilterAdapter
   override def messageReceived(nextFilter: IoFilter.NextFilter, session: IoSession, message: Any) = {
 
     def onError(error: Data) = {
-      logWarning("Session " + session + ": " + error.getAs[Symbol]('desc, 'UnknownError).name)
+      logWarning("Session " + session + ": " + error.get[Symbol]('desc, 'UnknownError).name)
       session.write(error)
     }
 
     def getAccountAndPw(data: Data): Option[(String, Array[Char])] = {
-      val accountName = data.getString('account, null)
-      val pw = data.getString('pw, null).toCharArray
+      val accountName = data.get('account, "")
+      val pw = data.get('pw, "").toCharArray
       if (accountName == null || accountName.length == 0) {
         onError(missingAccount)
         None
@@ -82,10 +82,12 @@ class AuthenticationFilter(authenticator: Authenticator) extends IoFilterAdapter
 
     message match {
       case data: Data =>
+        println("AuthFilter debug, type = " + data.get[AnyRef]('type, null))
+        
         val account = session.getAttribute("ACCOUNT").asInstanceOf[Ref[Entity]]
-        if      (account == null && data.get('type, null) == 'login) login(data)
-        else if (account == null && data.get('type, null) == 'createAccount) createAccount(data)
-        else if (account == null) onError(notAuthenticatedError) // Not logged in and didnt get login message
+        if      (account == null && data.get[AnyRef]('type, null) == 'login) login(data)
+        else if (account == null && data.get[AnyRef]('type, null) == 'createAccount) createAccount(data)
+        else if (account == null) onError(notAuthenticatedError) // Not logged in and didn't get login message
         else nextFilter.messageReceived(session, message) // Logged in already, forward message
       case _ => onError(unknownMessage) // Message wasn't a Data message
     }

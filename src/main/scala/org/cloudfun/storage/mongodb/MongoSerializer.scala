@@ -6,6 +6,7 @@ import com.mongodb.{BasicDBList, BasicDBObject, DBObject}
 import org.cloudfun.data.{MutableData, Data}
 import scala.collection.JavaConversions._
 import org.bson.types.ObjectId
+import org.scalaprops.Property
 
 
 /**
@@ -33,10 +34,12 @@ object MongoSerializer extends Serializer[Storable] {
 
       // TODO: Check that the kind is among allowed types
       // Create instance
+      println("MongoSerializer: Creating " +kind)
       val obj: Storable = Class.forName(kind).asInstanceOf[Storable]
 
       // Copy data
-      data.properties foreach (p => obj.set(p, data(p)))
+      println("MongoSerializer: Copying data")
+      data.properties.values foreach ((p: Property[_]) => obj.put(p.name, p.value))
 
       Some(obj)
     }
@@ -44,8 +47,8 @@ object MongoSerializer extends Serializer[Storable] {
 
   private def dataToObj(data: Data): DBObject = {
     val doc = new BasicDBObject()
-    data.toMap.elements foreach ( (e: (Symbol, Object)) => {
-      var value = e._2
+    data.properties.elements foreach ( (e: (Symbol, Property[_])) => {
+      var value = e._2.get
       if (value.isInstanceOf[MongoRef[_]]) value = value.asInstanceOf[MongoRef[_]].id
       if (value.isInstanceOf[Data]) value = dataToObj(value.asInstanceOf[Data])
       if (value.isInstanceOf[List[_]]) value = listToObj(value.asInstanceOf[List[_]])
@@ -76,7 +79,7 @@ object MongoSerializer extends Serializer[Storable] {
       if (value.isInstanceOf[DBObject]) value = objToData(value.asInstanceOf[DBObject])
       if (value.isInstanceOf[ObjectId]) value = MongoRef[Storable](value.asInstanceOf[ObjectId])
 
-      data.set(Symbol(e._1.toString), value.asInstanceOf[Object])
+      data.put(Symbol(e._1.toString), value.asInstanceOf[Object])
     })
     data
   }

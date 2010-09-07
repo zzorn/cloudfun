@@ -18,6 +18,8 @@ class DummyTestAuthenticator(storage: Storage, gameService: GameService) extends
     else if (pw == null || pw.length < 6 || accountName.toArray == pw) TooWeakPassword
     else {
       val accountEntity = gameService.createEntityForNewUser(accountName)
+      storage.store(accountEntity)
+      println("Retrieving stored acc in dummy test auth " + storage.get(accountEntity.ref))
       val accountRef = storage.getReference[Entity](accountEntity)
 
       accounts = accounts + (accountName -> (accountRef, pw))

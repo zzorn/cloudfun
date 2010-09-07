@@ -23,10 +23,12 @@ class ClientConnectionHandler(storage: Storage) extends IoHandlerAdapter with Lo
     message match {
       case d: Data =>
         // Find the account / avatar to handle the message
-        val accountEntity: Entity = storage.get(session.getAttribute("ACCOUNT").asInstanceOf[Ref[Entity]])
+        val sessionRef: Ref[Entity] = session.getAttribute("ACCOUNT").asInstanceOf[Ref[Entity]]
+        println("Session ref " + sessionRef)
 
         // Send / schedule message
-        accountEntity.onMessage(d)
+        val accountEntity: Entity = storage.get[Entity](sessionRef)
+        println("Acc entity " + accountEntity)
 
       case null => logError("Null message")
       case _ => logError("Unknown message type: " + message.asInstanceOf[Object].getClass)

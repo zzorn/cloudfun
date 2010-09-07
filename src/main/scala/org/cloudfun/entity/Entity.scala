@@ -1,15 +1,16 @@
 package org.cloudfun.entity
 
-import _root_.org.cloudfun.data.{MutableData, Data}
+import _root_.org.cloudfun.data.{Data}
 import org.cloudfun.messaging.MessageReceiver
 import org.cloudfun.storage.{NoRef, Ref, Storable}
 import org.cloudfun.util.LogMethods
+import org.scalaprops.Bean
 
 
 /**
  *  A persistent object consisting of different parts (facets).
  */
-class Entity extends MutableData with Storable with MessageReceiver with LogMethods {
+class Entity extends Bean with Storable with MessageReceiver with LogMethods {
 
   def this(facets: Iterable[Facet]) = {
     this()
@@ -19,7 +20,7 @@ class Entity extends MutableData with Storable with MessageReceiver with LogMeth
 
   def this(facets: Facet*) = this(facets.toList)
 
-  val facets = list[Ref[Facet]]('facets)
+  val facets = p[List[Ref[Facet]]]('facets, Nil)
   
   final def addFacet(facet: Facet) {
     val r = facet.ref[Facet]
@@ -49,7 +50,7 @@ class Entity extends MutableData with Storable with MessageReceiver with LogMeth
   def facet[T <: Facet](name: Symbol): Option[T] = facets().map(_.apply()).find(f => f.facetType == name).asInstanceOf[Option[T]]
 
   final def onMessage(message: Data) = {
-    message.get('facet) match {
+    message.get[AnyRef]('facet) match {
       case None => fallbackMessageHandler(message)
       case Some(name: Symbol) => facet[Facet](name) match {
         case None => fallbackMessageHandler(message)

@@ -212,11 +212,11 @@ class BinarySerializer {
 
     add( new TypeSerializer[Data]( classOf[Data] ) {
       def enc(buffer: IoBuffer, value: T) {
-        val entries = value.toMap
+        val entries = value.properties
         buffer.putInt( entries.size )
-        entries foreach {case (key, value) =>
+        entries foreach {case (key, property) =>
           symbolSerializer.enc( buffer, key )
-          anySerializer.encode( buffer, value )
+          anySerializer.encode( buffer, property.get )
         }
       }
       def dec(buffer: IoBuffer) = {
