@@ -15,7 +15,7 @@ class DummyTestAuthenticator(storage: Storage, gameService: GameService) extends
 
   def createAccount(accountName: String, pw: Array[Char]): AccountCreationResponse = {
     if (accountName == null || accountName.length < 3 || accounts.contains(accountName)) AccountNameUnavailable
-    else if (pw == null || pw.length < 6 || accountName.toArray == pw) TooWeakPassword
+    else if (tooWeakPassword(pw, accountName)) TooWeakPassword
     else {
       val accountEntity = gameService.createEntityForNewUser(accountName)
       storage.store(accountEntity)
@@ -32,6 +32,10 @@ class DummyTestAuthenticator(storage: Storage, gameService: GameService) extends
       case Some((acc, pass)) => if (pass == pw) Some(acc) else None
       case None => None
     }
+  }
+
+  private def tooWeakPassword(pw: Array[Char], accountName: String): Boolean = {
+    pw == null || pw.length < 6 || accountName.toArray == pw
   }
 
 }

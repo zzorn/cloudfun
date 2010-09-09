@@ -17,20 +17,24 @@ class ChatGame extends Game {
     context.storage.store(new Entity())
   }
 
-  def createEntityForNewUser(userName: String, context: GameServer) = {
-    new Entity() {
-      override def fallbackMessageHandler(message: Data) {
-        println(message)
+  /*
+  class ChatEntity extends Entity {
+    override def fallbackMessageHandler(message: Data) {
+      println(message)
 
-        // TODO: Tell message to other users
+      // TODO: Tell message to other users
 
-        // Use a chat facet or such, that contains reference to a chat channel
-        // Get refs to all users on the chat channel
-        // Send the message to their chat facets
-        // The chat facet forwards any received message to the client
+      // Use a chat component or such, that contains reference to a chat channel
+      // Get refs to all users on the chat channel
+      // Send the message to their chat component
+      // The chat component forwards any received message to the client
 
-      }
     }
+  }
+  */
+
+  def createEntityForNewUser(userName: String, context: GameServer) = {
+    new Entity()
   }
 
   

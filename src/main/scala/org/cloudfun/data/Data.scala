@@ -24,7 +24,7 @@ trait Data extends Bean {
   /** Get property if found */
 //  def get(name: Symbol): Option[Object] = fields.get(name) match {case None => None; case Some(field) => field.get}
 
-
+// TODO: Add copy from bean method to bean  
 
 //  def set(name: Symbol, value: Object) = fields.get(name) match {case None => ; case Some(field) => field.set(value)}
 

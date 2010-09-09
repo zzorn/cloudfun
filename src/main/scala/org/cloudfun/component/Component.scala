@@ -10,19 +10,19 @@ import org.cloudfun.storage.{NoRef, Ref, Storable}
 /**
  * A part of an entity, concentrating on a specific area of functionality.
  */
-trait Facet extends Data with Storable with Taskable with MessageReceiver {
+trait Component extends Data with Storable with Taskable with MessageReceiver {
 
   /**
-   * The entity that this facet is a part of.
+   * The entity that this component is a part of.
    */
   val entity = refProperty[Entity]('entity)
 
   /**
-   * Name for this type of facet.
+   * Name for this type of component.
    */
   def facetType: Symbol = Symbol(getClass.getSimpleName())
 
-  protected[entity] final def initialize(parameters: Data) {init(parameters)}
+  protected[entity] final def initialize() {init()}
 
   override final def delete() {
     super.delete()
@@ -31,17 +31,17 @@ trait Facet extends Data with Storable with Taskable with MessageReceiver {
   }
 
   /**
-   * Called when after the Facet has been created.
+   * Called when after the Component has been created.
    */
-  protected def init(parameters: Data) {}
+  protected def init() {}
 
   /**
-   * Called when the facet was deleted.
+   * Called when the component was deleted.
    */
   protected def onDeleted() {}
 
   override def toString: String = {
-    getClass.getSimpleName + " facet " + hashCode
+    getClass.getSimpleName + " component " + hashCode
   }
 
 

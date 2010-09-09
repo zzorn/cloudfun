@@ -11,23 +11,22 @@ class InMemoryStorage extends Storage {
   private val objects: HashSet[Storable] = new HashSet()
   private val names: HashMap[Symbol, Storable] = new HashMap()
 
-  def delete[T <: Storable](ref: Ref[T]) = objects.remove(getReferencedObject(ref))
-  def delete(obj: Storable) = objects.remove(obj)
+  def delete[T <: Storable](ref: Ref[T]): Unit = delete(getReferencedObject(ref))
+  def delete(obj: Storable): Unit = { objects.remove(obj); obj.stored= false }
 
   def get[T <: Storable](ref: Ref[T]) = getReferencedObject(ref)
 
   def getReference[T <: Storable](obj: T) = {
-    if (!objects.contains(obj)) objects.add(obj)
+    if (!objects.contains(obj)) store(obj)
 
     MemoryRef[T](obj)
   }
 
-  def store(obj: Storable) = objects.add(obj)
+  def store(obj: Storable) = { objects.add(obj); obj.stored = true }
 
   def storedObjects = Collections.unmodifiableSet(objects)
   def numberOfObjects: Int = objects.size
-
-
+  
   def delete(name: Symbol) = names.remove(name)
 
   def get[T <: Storable](name: Symbol) =

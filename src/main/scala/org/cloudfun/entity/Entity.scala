@@ -4,57 +4,55 @@ import _root_.org.cloudfun.data.{Data}
 import org.cloudfun.messaging.MessageReceiver
 import org.cloudfun.storage.{NoRef, Ref, Storable}
 import org.cloudfun.util.LogMethods
-import org.scalaprops.Bean
-
 
 /**
- *  A persistent object consisting of different parts (facets).
+ *  A persistent object consisting of different parts (component).
  */
-class Entity extends Bean with Storable with MessageReceiver with LogMethods {
+final class Entity extends Storable with MessageReceiver with LogMethods {
 
-  def this(facets: Iterable[Facet]) = {
+  def this(component: Iterable[Component]) = {
     this()
 
-    facets foreach addFacet
+    component foreach addComponent
   }
 
-  def this(facets: Facet*) = this(facets.toList)
+  def this(components: Component*) = this(components.toList)
 
-  val facets = p[List[Ref[Facet]]]('facets, Nil)
+  val components = p[List[Ref[Component]]]('components, Nil)
   
-  final def addFacet(facet: Facet) {
-    val r = facet.ref[Facet]
-    if (!facets().contains(r)) {
-      facets.set(r :: facets())
-      facet.entity := ref[Entity]
+  final def addComponent(component: Component) {
+    val r = component.ref[Component]
+    if (!components().contains(r)) {
+      components.set(r :: components())
+      component.entity := ref[Entity]
     }
   }
 
-  final def removeFacet(facet: Facet) {
+  final def removeComponent(facet: Component) {
     val r = facet.ref
-    if (facets().contains(r)) {
-      facets.set(facets().filterNot(_ == r))
+    if (components().contains(r)) {
+      components.set(components().filterNot(_ == r))
       facet.entity := NoRef[Entity]()
     }
   }
 
   /**
-   * Get a facet of the specific type, or None if not found.
+   * Get a component of the specific type, or None if not found.
    */
-//  def facet[T <: Facet](implicit m: Manifest[T]): Option[T] = facets().map(_.apply()).find(f => m.erasure.isInstance(f)).asInstanceOf[Option[T]]
+//  def component[T <: Component](implicit m: Manifest[T]): Option[T] = component().map(_.apply()).find(f => m.erasure.isInstance(f)).asInstanceOf[Option[T]]
 
   /**
-   * Get a facet with the specified name, or None if not found.
+   * Get a component with the specified name, or None if not found.
    */
-  // TODO: Store the facets in a map instead, for faster access?
-  def facet[T <: Facet](name: Symbol): Option[T] = facets().map(_.apply()).find(f => f.facetType == name).asInstanceOf[Option[T]]
+  // TODO: Store the component in a map instead, for faster access?
+  def component[T <: Component](name: Symbol): Option[T] = components().map(_.apply()).find(f => f.facetType == name).asInstanceOf[Option[T]]
 
   final def onMessage(message: Data) = {
-    message.get[AnyRef]('facet) match {
+    message.get[AnyRef]('component) match {
       case None => fallbackMessageHandler(message)
-      case Some(name: Symbol) => facet[Facet](name) match {
+      case Some(name: Symbol) => component[Component](name) match {
         case None => fallbackMessageHandler(message)
-        case Some(facet: Facet) => facet.onMessage(message)
+        case Some(component: Component) => component.onMessage(message)
       }
     }
   }
@@ -64,18 +62,18 @@ class Entity extends Bean with Storable with MessageReceiver with LogMethods {
   }
 
   /**
-   * Removes the entity and its facets from persistent storage.
+   * Removes the entity and its component from persistent storage.
    */
   override final def delete() {
-    // Delete facets
-    facets().foreach {f: Ref[Facet] => f().delete() }
+    // Delete component
+    components().foreach {f: Ref[Component] => f().delete() }
 
     // Delete self
     super.delete()
   }
 
   override def toString(): String = {
-    "Entity " + hashCode + "¸ facets: " + facets().map(_.apply()).mkString("[", ", ", "]")
+    "Entity " + hashCode + ", component: " + components().map(_.apply()).mkString("[", ", ", "]")
   }
 
 

@@ -7,41 +7,41 @@ import org.cloudfun.data.{MutableData, Data}
 import scala.collection.JavaConversions._
 import org.bson.types.ObjectId
 import org.scalaprops.Property
-
+import java.lang.Class
+import org.cloudfun.entity.{ComponentType, ComponentService}
 
 /**
  * Serializer for converting Storable objects to MongoDB format and back.
  */
-object MongoSerializer extends Serializer[Storable] {
-  
+class MongoSerializer(componentService: ComponentService) extends Serializer[Storable] {
+
+  private val CF_TYPE = "_cf_type"
+
   def in(obj: Storable): DBObject = {
-    val doc = new BasicDBObject()
-    doc.put("data", dataToObj(obj))
-    doc.put("type", obj.getClass().getName())
+    val doc = dataToObj(obj)
+
+    val componentType: Symbol = componentService.getComponentType(obj) match {
+      case None => throw new IllegalStateException("Can not store an object of type " + obj.getClass.getName())
+      case Some(ct: ComponentType[_]) => ct.name
+    }
+
+    doc.put(CF_TYPE, componentType.name)
     doc
   }
 
   def out(dbo: DBObject): scala.Option[Storable] = {
     if (dbo == null) None
     else {
+      if (!dbo.containsField(CF_TYPE)) throw new IllegalStateException("Can not unserialize object, it has no type field ("+CF_TYPE+").")
+
       // Get type
-      val kind: String = dbo.get("type").asInstanceOf[String]
-      if (kind == null) throw new IllegalStateException("Can not unserialize object, it has no type field.")
+      val kind = Symbol(dbo.get(CF_TYPE).toString)
 
       // Get data
-      val data: Data = objToData(dbo.get("data").asInstanceOf[DBObject])
-      if (data == null) throw new IllegalStateException("Can not unserialize object, it has no data field.")
+      val properties= objToMap(dbo)
 
-      // TODO: Check that the kind is among allowed types
-      // Create instance
-      println("MongoSerializer: Creating " +kind)
-      val obj: Storable = Class.forName(kind).asInstanceOf[Storable]
-
-      // Copy data
-      println("MongoSerializer: Copying data")
-      data.properties.values foreach ((p: Property[_]) => obj.put(p.name, p.value))
-
-      Some(obj)
+      // Build component
+      componentService.createComponent(kind, properties, true)
     }
   }
 
@@ -82,6 +82,20 @@ object MongoSerializer extends Serializer[Storable] {
       data.put(Symbol(e._1.toString), value.asInstanceOf[Object])
     })
     data
+  }
+
+  private def objToMap(obj: DBObject): Map[Symbol, AnyRef] = {
+    var map = Map[Symbol, AnyRef]()
+    obj.toMap.elements foreach ( (e: (_, _)) => {
+      val key: Symbol = Symbol(e._1.toString)
+      var value: AnyRef = e._2.asInstanceOf[AnyRef]
+      if (value.isInstanceOf[BasicDBList]) value = objToList(value.asInstanceOf[BasicDBList])
+      if (value.isInstanceOf[DBObject]) value = objToData(value.asInstanceOf[DBObject])
+      if (value.isInstanceOf[ObjectId]) value = MongoRef[Storable](value.asInstanceOf[ObjectId])
+
+      map += (key -> value)
+    })
+    map
   }
 
   private def objToList(list: BasicDBList): List[_] = {

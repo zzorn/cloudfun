@@ -15,7 +15,10 @@ import org.cloudfun.{CloudFun, CloudFunApplication}
 // TODO: Save to and load from JSon style key-value map?
 trait Storable extends Data {
 
+  var stored = false
+
   def ref[T <: Storable]: Ref[T] = storage.getReference[T](this.asInstanceOf[T])
+
   def store() = storage.store(this)
   def delete() = storage.delete(this)
 

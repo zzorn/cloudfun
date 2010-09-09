@@ -5,12 +5,13 @@ import _root_.com.mongodb._
 import _root_.com.osinka.mongodb.{MongoCollection}
 import _root_.org.bson.types.ObjectId
 import org.cloudfun.storage._
+import org.cloudfun.entity.ComponentService
 
 /**
  * 
  */
 // TODO: Use different names for the database depending on the game name?  So that it is a bit more easy to run different games without having them mess up each others databases accidentally?
-class MongoDbStorage() extends Storage {
+class MongoDbStorage(componentService: ComponentService) extends Storage {
 
   val masterStorage = conf[String]("s",  "storage",            ServerAddress.defaultHost, "Primary MongoDB server address.")
   val masterPort    = conf[Int]   ("sp", "storage-port",       ServerAddress.defaultPort, "Primary MongoDB server port.")
@@ -20,7 +21,7 @@ class MongoDbStorage() extends Storage {
 
   class StorableCollection(database: DB) extends MongoCollection[Storable] {
     val underlying = database.getCollection("entities")
-    def serializer = MongoSerializer
+    val serializer = new MongoSerializer(componentService)
   }
 
   private var mongo: Mongo = null
@@ -51,11 +52,17 @@ class MongoDbStorage() extends Storage {
 
 
   def store(obj: Storable) {
-    if (obj != null) entityCollection += obj
+    if (obj != null) {
+      entityCollection += obj
+      obj.stored = true
+    }
   }
 
   def delete(obj: Storable) {
-    if (obj != null) entityCollection -= obj
+    if (obj != null) {
+      entityCollection -= obj
+      obj.stored = false
+    }
   }
 
   def delete[T <: Storable](ref: Ref[T]) {
@@ -73,11 +80,13 @@ class MongoDbStorage() extends Storage {
     val id: ObjectId = obj.get('_id) match  {
       case Some(id) => id.asInstanceOf[ObjectId]
       case None =>
+        obj.stored = false
         val id = new ObjectId()
         obj.put('_id, id)
-        store(obj)
         id
     }
+    
+    if (!obj.stored) store(obj)
 
     return MongoRef[T](id)
   }
