@@ -1,4 +1,4 @@
-package org.cloudfun.network
+package org.cloudfun.network.server
 
 import _root_.org.apache.mina.core.session.IdleStatus
 import _root_.org.apache.mina.filter.codec.ProtocolCodecFilter
@@ -6,11 +6,10 @@ import _root_.org.apache.mina.filter.executor.ExecutorFilter
 import _root_.org.apache.mina.filter.logging.LoggingFilter
 import _root_.org.apache.mina.transport.socket.nio.NioSocketAcceptor
 import _root_.org.cloudfun.authentication.Authenticator
-import _root_.org.cloudfun.{ConfigOption}
-import protocol.binary.BinaryProtocol
-import server.AuthenticationFilter
 import org.cloudfun.storage.Storage
 import java.net.InetSocketAddress
+import org.cloudfun.network.protocol.binary.BinaryProtocol
+import org.cloudfun.network.{Network}
 
 /**
  * Listens to incoming client connections and attaches them to their accounts/avatars, or creates new ones if they are new.

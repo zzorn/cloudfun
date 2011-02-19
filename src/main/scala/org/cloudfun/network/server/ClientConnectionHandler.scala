@@ -1,4 +1,4 @@
-package org.cloudfun.network
+package org.cloudfun.network.server
 
 import _root_.org.apache.mina.core.service.IoHandlerAdapter
 import _root_.org.apache.mina.core.session.{IdleStatus, IoSession}

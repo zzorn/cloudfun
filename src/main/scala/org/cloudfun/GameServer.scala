@@ -5,7 +5,9 @@ import authentication.{Authenticator, DummyTestAuthenticator}
 import component.{ComponentServiceImpl, ComponentService}
 import entity.{Entity}
 import game.{GameService, Game, DefaultGameService}
-import network.{Network, ServerNetwork}
+import network.Network
+import network.Network
+import network.server.ServerNetwork
 import scheduler.pooled.PooledScheduler
 import scheduler.Scheduler
 import storage.memory.InMemoryStorage
