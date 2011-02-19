@@ -11,4 +11,5 @@ class ExampleGame extends Game {
   def createEntityForNewUser(userName: String, context: GameServer) = null
 
   def setupGame(context: GameServer) = null
+
 }

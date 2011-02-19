@@ -1,6 +1,7 @@
-package org.cloudfun.entity
+package org.cloudfun.component
 
 import org.cloudfun.storage.{Storable}
+import org.cloudfun.entity.Entity
 
 class ComponentServiceImpl() extends ComponentService {
 

@@ -8,7 +8,7 @@ import scala.collection.JavaConversions._
 import org.bson.types.ObjectId
 import org.scalaprops.Property
 import java.lang.Class
-import org.cloudfun.entity.{ComponentType, ComponentService}
+import org.cloudfun.component.{ComponentService, ComponentType}
 
 /**
  * Serializer for converting Storable objects to MongoDB format and back.

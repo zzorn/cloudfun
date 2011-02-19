@@ -4,6 +4,7 @@ import _root_.org.cloudfun.data.{Data}
 import org.cloudfun.messaging.MessageReceiver
 import org.cloudfun.storage.{NoRef, Ref, Storable}
 import org.cloudfun.util.LogMethods
+import org.cloudfun.component.Component
 
 /**
  *  A persistent object consisting of different parts (component).

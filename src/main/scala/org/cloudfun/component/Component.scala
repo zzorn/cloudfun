@@ -1,4 +1,4 @@
-package org.cloudfun.entity
+package org.cloudfun.component
 
 import _root_.org.cloudfun.messaging.MessageReceiver
 import org.cloudfun.scheduler.Taskable
@@ -6,6 +6,7 @@ import org.cloudfun.scheduler.Taskable
 import org.cloudfun.data.{ Data}
 import org.scalaprops.Bean
 import org.cloudfun.storage.{NoRef, Ref, Storable}
+import org.cloudfun.entity.Entity
 
 /**
  * A part of an entity, concentrating on a specific area of functionality.
@@ -22,7 +23,7 @@ trait Component extends Data with Storable with Taskable with MessageReceiver {
    */
   def facetType: Symbol = Symbol(getClass.getSimpleName())
 
-  protected[entity] final def initialize() {init()}
+  protected[cloudfun] final def initialize() {init()}
 
   override final def delete() {
     super.delete()

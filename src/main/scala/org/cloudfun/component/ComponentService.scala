@@ -1,4 +1,4 @@
-package org.cloudfun.entity
+package org.cloudfun.component
 
 import org.cloudfun.data.{EmptyData, Data}
 import org.cloudfun.storage.Storable

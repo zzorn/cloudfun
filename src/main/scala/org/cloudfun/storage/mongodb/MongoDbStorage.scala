@@ -5,7 +5,7 @@ import _root_.com.mongodb._
 import _root_.com.osinka.mongodb.{MongoCollection}
 import _root_.org.bson.types.ObjectId
 import org.cloudfun.storage._
-import org.cloudfun.entity.ComponentService
+import org.cloudfun.component.ComponentService
 
 /**
  * 

@@ -2,7 +2,8 @@ package org.cloudfun
 
 import _root_.java.lang.String
 import authentication.{Authenticator, DummyTestAuthenticator}
-import entity.{ComponentServiceImpl, ComponentService, Entity}
+import component.{ComponentServiceImpl, ComponentService}
+import entity.{Entity}
 import game.{GameService, Game, DefaultGameService}
 import network.{Network, ServerNetwork}
 import scheduler.pooled.PooledScheduler
