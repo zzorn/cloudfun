@@ -1,7 +1,7 @@
 package org.cloudfun.examples
 
-import org.cloudfun.data.Data
-import org.cloudfun.component.Component
+import org.cloudfun.framework.data.Data
+import org.cloudfun.framework.component.Component
 
 /**
  * 

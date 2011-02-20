@@ -1,6 +1,7 @@
 package org.cloudfun
 
-import game.Game
+import framework.game.Game
+import framework.GameServer
 import java.lang.String
 
 /**

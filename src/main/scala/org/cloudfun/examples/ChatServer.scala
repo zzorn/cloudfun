@@ -1,8 +1,8 @@
 package org.cloudfun.examples
 
-import org.cloudfun.GameServer
-import org.cloudfun.storage.memory.InMemoryStorage
-import org.cloudfun.storage.Storage
+import org.cloudfun.framework.GameServer
+import org.cloudfun.framework.storage.memory.InMemoryStorage
+import org.cloudfun.framework.storage.Storage
 
 /**
  * 

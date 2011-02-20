@@ -1,10 +1,10 @@
 package org.cloudfun.examples
 
 import _root_.java.lang.String
-import _root_.org.cloudfun.entity.Entity
-import _root_.org.cloudfun.game.Game
-import org.cloudfun.{GameServer, CloudFunApplication}
-import org.cloudfun.data.Data
+import _root_.org.cloudfun.framework.entity.Entity
+import _root_.org.cloudfun.framework.game.Game
+import org.cloudfun.framework.{GameServer, CloudFunApplication}
+import org.cloudfun.framework.data.Data
 
 /**
  * Example simple chat game.

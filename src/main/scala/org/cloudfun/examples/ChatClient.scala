@@ -1,14 +1,14 @@
 package org.cloudfun.examples
 
-import org.cloudfun.GameClient
-import org.cloudfun.network.client.ServerHandler
+import org.cloudfun.framework.network.client.ServerHandler
 import java.lang.{Exception, String}
 import javax.swing.{JTextArea, JTextField, JLabel, JFrame}
 import javax.swing.text.{SimpleAttributeSet, Document}
 import java.awt.BorderLayout
 import java.awt.event.{ActionEvent, ActionListener, ComponentListener}
 import org.cloudfun.util.SimpleConsole
-import org.cloudfun.data.{MutableData, Data}
+import org.cloudfun.framework.data.{MutableData, Data}
+import org.cloudfun.framework.GameClient
 
 /**
  * 
